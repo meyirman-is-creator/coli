@@ -16,6 +16,8 @@ import authReducer from "./slices/authSlice";
 import apartmentReducer from "./slices/apartmentSlice";
 import profileReducer from "./slices/profileSlice";
 import filterReducer from "./slices/filterSlice";
+import addressReducer from "./slices/addressSlice";
+import searchBarReducer from "./features/searchBar/searchBar";
 
 // Create a custom storage for Next.js
 const createNoopStorage = () => {
@@ -42,6 +44,8 @@ const rootReducer = combineReducers({
   apartment: apartmentReducer,
   profile: profileReducer,
   filter: filterReducer,
+  address: addressReducer,
+  searchBar: searchBarReducer,
 });
 
 const persistConfig = {

@@ -10,6 +10,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
 import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
@@ -21,20 +22,31 @@ import {
   Menu,
   X,
   Globe,
+  LogOut,
 } from "lucide-react";
 import { MobileNav } from "./mobile-nav";
-import { useAppSelector } from "@/lib/hooks/redux-hooks";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { cn } from "@/lib/utils";
 import SearchBar from "@/components/ui/search-bar";
-import { useClientTranslation } from "@/i18n/client"; // Исправленный импорт
+import { useClientTranslation } from "@/i18n/client";
+import { fetchCities } from "@/store/slices/addressSlice";
 
 const Header = () => {
   const pathname = usePathname();
   const router = useRouter();
+  const dispatch = useAppDispatch();
+
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [locale, setLocale] = useState<"en" | "ru">("ru");
   const { t, i18n } = useClientTranslation(locale);
+
+  // Предзагрузка городов для SearchBar
+  useEffect(() => {
+    if (!pathname.includes("/me")) {
+      dispatch(fetchCities());
+    }
+  }, [dispatch, pathname]);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -42,8 +54,8 @@ const Header = () => {
 
   const changeLanguage = (lang: "en" | "ru") => {
     setLocale(lang);
-    // Here you would typically refresh the page or update routes
-    // For this implementation, we're just changing the state
+    i18n.changeLanguage(lang);
+    localStorage.setItem("locale", lang); // Сохраняем выбор в localStorage
   };
 
   // Navigation items with translations
@@ -106,16 +118,26 @@ const Header = () => {
           {/* Language Switcher */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="h-9 w-9">
                 <Globe className="h-5 w-5" />
                 <span className="sr-only">{t("header.switchLanguage")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => changeLanguage("en")}>
+              <DropdownMenuItem
+                className={cn(
+                  locale === "en" && "bg-accent text-accent-foreground"
+                )}
+                onClick={() => changeLanguage("en")}
+              >
                 English
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => changeLanguage("ru")}>
+              <DropdownMenuItem
+                className={cn(
+                  locale === "ru" && "bg-accent text-accent-foreground"
+                )}
+                onClick={() => changeLanguage("ru")}
+              >
                 Русский
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -149,28 +171,47 @@ const Header = () => {
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent className="w-56" align="end" forceMount>
+                  <div className="flex items-center justify-start gap-2 p-2">
+                    <div className="flex flex-col space-y-1 leading-none">
+                      {user?.firstName && (
+                        <p className="font-medium">
+                          {user.firstName} {user.lastName}
+                        </p>
+                      )}
+                      {user?.email && (
+                        <p className="w-[200px] truncate text-sm text-muted-foreground">
+                          {user.email}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/profile">
+                    <Link href="/profile" className="cursor-pointer">
                       <User className="mr-2 h-4 w-4" />
                       <span>{t("header.profile")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile/announcements">
+                    <Link
+                      href="/profile/announcements"
+                      className="cursor-pointer"
+                    >
                       <Search className="mr-2 h-4 w-4" />
                       <span>{t("header.myListings")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/profile/responses">
+                    <Link href="/profile/responses" className="cursor-pointer">
                       <PlusCircle className="mr-2 h-4 w-4" />
                       <span>{t("header.myResponses")}</span>
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/auth/logout">
-                      <LogIn className="mr-2 h-4 w-4" />
+                    <Link href="/auth/logout" className="cursor-pointer">
+                      <LogOut className="mr-2 h-4 w-4" />
                       <span>{t("header.logout")}</span>
                     </Link>
                   </DropdownMenuItem>
