@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useTranslation } from "@/i18n";
+import { useClientTranslation, useTranslation } from "@/i18n";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -46,7 +46,8 @@ interface FilterProps {
 }
 
 export default function Filter({ onSubmit, onReset }: FilterProps) {
-  const { t } = useTranslation("ru");
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale);
   const dispatch = useAppDispatch();
   const filterState = useAppSelector((state) => state.filter);
 

@@ -7,14 +7,13 @@ import {
   setPage,
   setLimit,
 } from "@/store/slices/apartmentSlice";
-import Container from "@/components/layouts/Container";
 import { ApartmentCard } from "@/components/ui/ApartmentCard";
 import Map from "@/components/ui/Map";
 import Filter from "./apartments/Filter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useTranslation } from "@/i18n";
+import { useClientTranslation, useTranslation } from "@/i18n";
 import { useMediaQuery } from "react-responsive";
 import { Apartment, ApartmentFilter } from "@/types/apartment";
 import {
@@ -34,7 +33,8 @@ import {
 import { useRouter } from "next/navigation";
 
 export default function ApartmentsPage() {
-  const { t } = useTranslation("ru");
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale);
   const router = useRouter();
   const dispatch = useAppDispatch();
 
@@ -121,7 +121,7 @@ export default function ApartmentsPage() {
   ];
 
   return (
-    <Container>
+    <div className="container-custom">
       <div className="py-6">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold">{t("apartments.title")}</h1>
@@ -294,6 +294,6 @@ export default function ApartmentsPage() {
           </div>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }

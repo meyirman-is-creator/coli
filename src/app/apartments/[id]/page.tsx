@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
 import {
@@ -8,7 +8,6 @@ import {
   resetSelectedApartment,
 } from "@/store/slices/apartmentSlice";
 import { useAppDispatch, useAppSelector } from "@/store/index";
-import Container from "@/components/layouts/Container";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Carousel,
@@ -17,7 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-import { useTranslation } from "@/i18n";
+import { useClientTranslation, useTranslation } from "@/i18n";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -42,7 +41,8 @@ import Link from "next/link";
 import { formatDate, formatCurrency } from "@/lib/utils";
 
 export default function ApartmentDetailPage() {
-  const { t } = useTranslation("ru");
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale);
   const { apartmentId } = useParams();
   const dispatch = useAppDispatch();
   const {
@@ -65,7 +65,7 @@ export default function ApartmentDetailPage() {
 
   if (status === "loading" || !apartment) {
     return (
-      <Container>
+      <div className="container-custom">
         <div className="py-8">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" asChild>
@@ -96,13 +96,13 @@ export default function ApartmentDetailPage() {
             </div>
           </div>
         </div>
-      </Container>
+      </div>
     );
   }
 
   if (error) {
     return (
-      <Container>
+      <div className="container-custom">
         <div className="py-8">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" asChild>
@@ -122,7 +122,7 @@ export default function ApartmentDetailPage() {
             </Button>
           </div>
         </div>
-      </Container>
+      </div>
     );
   }
 
@@ -130,7 +130,7 @@ export default function ApartmentDetailPage() {
     apartment.photos.find((photo) => photo.isMain) || apartment.photos[0];
 
   return (
-    <Container>
+    <div className="container-custom">
       <div className="py-8">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="sm" asChild>
@@ -456,6 +456,6 @@ export default function ApartmentDetailPage() {
           </div>
         </div>
       </div>
-    </Container>
+    </div>
   );
 }
