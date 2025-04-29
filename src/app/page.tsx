@@ -145,7 +145,7 @@ export default function HomePage() {
               <div key={item} className="card-primary h-full flex flex-col">
                 <div className="relative">
                   <img
-                    src={`/api/placeholder/400/250`}
+                    src={`/coliving.png`}
                     alt="Apartment"
                     className="w-full h-48 object-cover rounded-t-lg"
                   />
