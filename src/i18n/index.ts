@@ -1,5 +1,7 @@
-export { useClientTranslation } from './client'
-export { useServerTranslation } from './server'
+import { useClientTranslation } from './client'
+import { useServerTranslation } from './server'
+
+export { useClientTranslation, useServerTranslation }
 export * from './settings'
 
 // Для упрощения использования, создаем общий алиас для клиентской функции

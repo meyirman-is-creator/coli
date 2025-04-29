@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useAppDispatch, useAppSelector } from "@/store/store";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import {
   fetchApartments,
   setPage,
@@ -52,7 +52,6 @@ export default function ApartmentsPage() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });
 
-  // Load apartments on mount and when filter/sort changes
   useEffect(() => {
     const fetchData = async () => {
       dispatch(
@@ -70,7 +69,6 @@ export default function ApartmentsPage() {
     fetchData();
   }, [dispatch, filterState, sortOrder]);
 
-  // Handle load more
   const handleLoadMore = () => {
     if (status !== "loading") {
       dispatch(setPage(page + 1));
@@ -88,15 +86,12 @@ export default function ApartmentsPage() {
   };
 
   const handleFilterSubmit = (filterData: any) => {
-    // Implementation would depend on how your filter component works
     console.log("Filter submitted:", filterData);
-    // This would typically update the filter state in Redux
   };
 
   const handleMapPointsSelected = (points: { x: number; y: number }[]) => {
     setSelectedPoints(points);
 
-    // Re-fetch with the selected map area
     dispatch(
       fetchApartments({
         filter: {
@@ -127,7 +122,6 @@ export default function ApartmentsPage() {
           <h1 className="text-2xl font-bold">{t("apartments.title")}</h1>
 
           <div className="flex items-center gap-2">
-            {/* View Toggle */}
             <Tabs
               defaultValue={view}
               onValueChange={(v) => setView(v as "list" | "map")}
@@ -145,7 +139,6 @@ export default function ApartmentsPage() {
               </TabsList>
             </Tabs>
 
-            {/* Mobile View Toggle */}
             <div className="md:hidden">
               <Button
                 variant="outline"
@@ -160,7 +153,6 @@ export default function ApartmentsPage() {
               </Button>
             </div>
 
-            {/* Sort Dropdown */}
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button variant="outline" className="flex items-center gap-1">
@@ -181,7 +173,6 @@ export default function ApartmentsPage() {
               </DropdownMenuContent>
             </DropdownMenu>
 
-            {/* Mobile Filter Button */}
             {isMobile && (
               <Sheet>
                 <SheetTrigger asChild>
@@ -198,16 +189,13 @@ export default function ApartmentsPage() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
-          {/* Desktop Filter */}
           {!isMobile && (
             <div className="hidden md:block">
               <Filter onSubmit={handleFilterSubmit} />
             </div>
           )}
 
-          {/* Main Content */}
           <div>
-            {/* Status Information */}
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-muted-foreground">
                 {status === "loading" && page === 1
@@ -216,7 +204,6 @@ export default function ApartmentsPage() {
               </p>
             </div>
 
-            {/* List View */}
             {view === "list" && (
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -225,7 +212,6 @@ export default function ApartmentsPage() {
                   ))}
                 </div>
 
-                {/* Loading or Load More */}
                 {status === "loading" && page > 1 ? (
                   <div className="flex justify-center mt-8">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -238,7 +224,6 @@ export default function ApartmentsPage() {
                   </div>
                 ) : null}
 
-                {/* Empty State */}
                 {apartments.length === 0 && status !== "loading" && (
                   <div className="flex flex-col items-center justify-center py-12">
                     <p className="text-lg font-medium mb-2">
@@ -252,7 +237,6 @@ export default function ApartmentsPage() {
               </>
             )}
 
-            {/* Map View */}
             {view === "map" && (
               <div className="relative">
                 <Map
@@ -263,7 +247,6 @@ export default function ApartmentsPage() {
                   className="rounded-lg border"
                 />
 
-                {/* Map Side Panel for Listings on Tablet/Desktop */}
                 {!isMobile && apartments.length > 0 && (
                   <div className="absolute top-4 right-4 w-80 max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-lg p-4 border">
                     <h3 className="text-sm font-medium mb-3">

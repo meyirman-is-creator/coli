@@ -3,7 +3,6 @@ import {
   FilterState,
   SaveFilterRequest,
   DeleteFilterRequest,
-  ApplyFilterRequest,
 } from "@/types/filter";
 import { ApartmentFilter } from "@/types/apartment";
 import * as filterService from "@/store/services/filterService";
@@ -47,6 +46,19 @@ export const deleteFilter = createAsyncThunk(
       return request.id;
     } catch (error: any) {
       return rejectWithValue(error.message || "Failed to delete filter");
+    }
+  }
+);
+
+export const applyFilter = createAsyncThunk(
+  "filter/applyFilter",
+  async (filter: ApartmentFilter, { rejectWithValue }) => {
+    try {
+      // Pass-through to update the current filter
+      // In a real app, this might make an API call
+      return await filterService.applyFilter(filter);
+    } catch (error: any) {
+      return rejectWithValue(error.message || "Failed to apply filter");
     }
   }
 );
@@ -129,6 +141,21 @@ const filterSlice = createSlice({
         );
       })
       .addCase(deleteFilter.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload as string;
+      });
+
+    // applyFilter
+    builder
+      .addCase(applyFilter.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(applyFilter.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.currentFilter = action.payload;
+      })
+      .addCase(applyFilter.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload as string;
       });

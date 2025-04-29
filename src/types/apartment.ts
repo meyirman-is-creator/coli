@@ -129,7 +129,7 @@ export type Apartment = {
   createdAt: string;
   updatedAt: string;
 };
-
+// Update the ApartmentFilter interface to include the additional fields
 export type ApartmentFilter = {
   id?: string;
   userId?: string;
@@ -147,5 +147,27 @@ export type ApartmentFilter = {
   availableFrom?: string;
   availableUntil?: string;
   maxOccupants?: number;
+  minAge?: number;
+  maxAge?: number;
+  roommates?: {
+    id: number;
+    name: string;
+  };
+  address?: {
+    regionId: number | null;
+    regionName: string;
+    districtId: number | null;
+    districtName: string;
+    microDistrictId: number | null;
+    microDistrictName: string;
+  };
+  utilitiesIncluded?: boolean;
+  forStudents?: boolean;
+  badHabitsAllowed?: boolean;
+  isNotFirstFloor?: boolean;
+  isNotLastFloor?: boolean;
+  minFloor?: number;
+  maxFloor?: number;
+  termType?: string | null;
   savedFilter?: boolean;
 };

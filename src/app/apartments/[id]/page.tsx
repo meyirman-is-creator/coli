@@ -7,7 +7,7 @@ import {
   fetchApartmentById,
   resetSelectedApartment,
 } from "@/store/slices/apartmentSlice";
-import { useAppDispatch, useAppSelector } from "@/store/index";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Carousel,
@@ -69,7 +69,7 @@ export default function ApartmentDetailPage() {
         <div className="py-8">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/apartments">
+              <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 {t("back")}
               </Link>
@@ -106,7 +106,7 @@ export default function ApartmentDetailPage() {
         <div className="py-8">
           <div className="flex items-center gap-2 mb-4">
             <Button variant="ghost" size="sm" asChild>
-              <Link href="/apartments">
+              <Link href="/">
                 <ArrowLeft className="h-4 w-4 mr-1" />
                 {t("back")}
               </Link>
@@ -118,7 +118,7 @@ export default function ApartmentDetailPage() {
             <h1 className="text-2xl font-bold mb-2">{t("error.title")}</h1>
             <p className="text-muted-foreground mb-6">{error}</p>
             <Button asChild>
-              <Link href="/apartments">{t("error.backToList")}</Link>
+              <Link href="/">{t("error.backToList")}</Link>
             </Button>
           </div>
         </div>
@@ -134,14 +134,13 @@ export default function ApartmentDetailPage() {
       <div className="py-8">
         <div className="flex items-center gap-2 mb-4">
           <Button variant="ghost" size="sm" asChild>
-            <Link href="/apartments">
+            <Link href="/">
               <ArrowLeft className="h-4 w-4 mr-1" />
               {t("back")}
             </Link>
           </Button>
         </div>
 
-        {/* Photos */}
         <div className="mb-8">
           {apartment.photos.length > 0 ? (
             isMobile ? (
@@ -194,7 +193,6 @@ export default function ApartmentDetailPage() {
         </div>
 
         <div className="flex flex-col-reverse md:grid md:grid-cols-3 gap-8">
-          {/* Main Content */}
           <div className="md:col-span-2">
             <div className="mb-6">
               <h1 className="text-3xl font-bold mb-2">{apartment.title}</h1>
@@ -364,7 +362,6 @@ export default function ApartmentDetailPage() {
               </TabsContent>
             </Tabs>
 
-            {/* Current Occupants */}
             {apartment.currentOccupants.length > 0 && (
               <div className="mt-8">
                 <h3 className="text-xl font-semibold mb-4">
@@ -391,7 +388,6 @@ export default function ApartmentDetailPage() {
             )}
           </div>
 
-          {/* Sidebar */}
           <div>
             <Card>
               <CardHeader>
@@ -402,7 +398,6 @@ export default function ApartmentDetailPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {/* Owner Info */}
                   <div className="flex items-center gap-3">
                     <Avatar>
                       <AvatarImage src={apartment.owner.photoUrl} />
@@ -420,7 +415,6 @@ export default function ApartmentDetailPage() {
 
                   <Separator />
 
-                  {/* Contact Buttons */}
                   <div className="space-y-3">
                     {apartment.owner.phone && (
                       <Button className="w-full gap-2" asChild>
@@ -439,7 +433,6 @@ export default function ApartmentDetailPage() {
 
                   <Separator />
 
-                  {/* Action Buttons */}
                   <div className="flex gap-2">
                     <Button variant="outline" className="flex-1 gap-2">
                       <Heart className="h-4 w-4" />

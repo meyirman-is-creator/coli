@@ -76,7 +76,7 @@ const Footer: React.FC<FooterProps> = ({ locale = "ru" }) => {
               </li>
               <li>
                 <Link
-                  href="/apartments"
+                  href="/"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
                   {locale === "en" ? "Listings" : "Объявления"}

@@ -35,7 +35,7 @@ export default function HomePage() {
               </p>
               <div className="flex flex-col sm:flex-row gap-4">
                 <Button size="lg" asChild>
-                  <Link href="/apartments">
+                  <Link href="/">
                     <Search className="mr-2 h-5 w-5" />
                     {t("homePage.hero.findHousing")}
                   </Link>
@@ -126,7 +126,7 @@ export default function HomePage() {
 
             <div className="mt-4 text-center">
               <Button variant="link" asChild>
-                <Link href="/apartments">
+                <Link href="/">
                   {t("homePage.search.advancedSearch")}
                   <ChevronRight className="ml-1 h-4 w-4" />
                 </Link>
@@ -144,7 +144,7 @@ export default function HomePage() {
               {t("homePage.featuredListings.title")}
             </h2>
             <Button variant="outline" asChild>
-              <Link href="/apartments">
+              <Link href="/">
                 {t("homePage.featuredListings.viewAll")}
                 <ChevronRight className="ml-1 h-4 w-4" />
               </Link>
