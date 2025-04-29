@@ -1,9 +1,8 @@
-// src/components/layout/header.tsx
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -27,26 +26,35 @@ import { MobileNav } from "./mobile-nav";
 import { useAppSelector } from "@/lib/hooks/redux-hooks";
 import { cn } from "@/lib/utils";
 import SearchBar from "@/components/ui/search-bar";
+import { useClientTranslation } from "@/i18n/client"; // Исправленный импорт
 
 const Header = () => {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, isAuthenticated } = useAppSelector((state) => state.auth);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [locale, setLocale] = useState<"en" | "ru">("en");
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t, i18n } = useClientTranslation(locale);
 
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen);
   };
 
-  // Translations for navigation items
+  const changeLanguage = (lang: "en" | "ru") => {
+    setLocale(lang);
+    // Here you would typically refresh the page or update routes
+    // For this implementation, we're just changing the state
+  };
+
+  // Navigation items with translations
   const navItems = [
     {
-      title: locale === "en" ? "Home" : "Главная",
+      title: t("header.home"),
       href: "/me",
       icon: <Home className="mr-2 h-4 w-4" />,
     },
     {
-      title: locale === "en" ? "Listings" : "Объявления",
+      title: t("header.listings"),
       href: "/apartments",
       icon: <Search className="mr-2 h-4 w-4" />,
     },
@@ -100,16 +108,14 @@ const Header = () => {
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon">
                 <Globe className="h-5 w-5" />
-                <span className="sr-only">
-                  {locale === "en" ? "Switch Language" : "Переключить язык"}
-                </span>
+                <span className="sr-only">{t("header.switchLanguage")}</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setLocale("en")}>
+              <DropdownMenuItem onClick={() => changeLanguage("en")}>
                 English
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => setLocale("ru")}>
+              <DropdownMenuItem onClick={() => changeLanguage("ru")}>
                 Русский
               </DropdownMenuItem>
             </DropdownMenuContent>
@@ -122,7 +128,7 @@ const Header = () => {
               <Button variant="outline" asChild className="hidden md:flex">
                 <Link href="/profile/add/announcements">
                   <PlusCircle className="mr-2 h-4 w-4" />
-                  {locale === "en" ? "Post a Listing" : "Разместить объявление"}
+                  {t("header.postListing")}
                 </Link>
               </Button>
 
@@ -147,29 +153,25 @@ const Header = () => {
                   <DropdownMenuItem asChild>
                     <Link href="/profile">
                       <User className="mr-2 h-4 w-4" />
-                      <span>{locale === "en" ? "Profile" : "Профиль"}</span>
+                      <span>{t("header.profile")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile/announcements">
                       <Search className="mr-2 h-4 w-4" />
-                      <span>
-                        {locale === "en" ? "My Listings" : "Мои объявления"}
-                      </span>
+                      <span>{t("header.myListings")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/profile/responses">
                       <PlusCircle className="mr-2 h-4 w-4" />
-                      <span>
-                        {locale === "en" ? "My Responses" : "Мои отклики"}
-                      </span>
+                      <span>{t("header.myResponses")}</span>
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link href="/auth/logout">
                       <LogIn className="mr-2 h-4 w-4" />
-                      <span>{locale === "en" ? "Logout" : "Выйти"}</span>
+                      <span>{t("header.logout")}</span>
                     </Link>
                   </DropdownMenuItem>
                 </DropdownMenuContent>
@@ -179,7 +181,7 @@ const Header = () => {
             <Button asChild className="hidden md:flex">
               <Link href="/auth/login">
                 <LogIn className="mr-2 h-4 w-4" />
-                {locale === "en" ? "Login" : "Войти"}
+                {t("header.login")}
               </Link>
             </Button>
           )}
@@ -203,6 +205,7 @@ const Header = () => {
           user={user}
           navItems={navItems}
           onClose={toggleMenu}
+          locale={locale}
         />
       )}
     </header>

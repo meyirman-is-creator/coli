@@ -1,0 +1,86 @@
+{
+  "header": {
+    "home": "Home",
+    "listings": "Listings",
+    "login": "Login",
+    "logout": "Logout",
+    "profile": "Profile",
+    "myListings": "My Listings",
+    "myResponses": "My Responses",
+    "postListing": "Post a Listing",
+    "switchLanguage": "Switch Language",
+    "register": "Register"
+  },
+  "homePage": {
+    "hero": {
+      "title": "Find ideal roommates and suitable housing",
+      "description": "Coli helps you quickly find suitable housing or roommates for collaborative living. Fill out the questionnaire and join a community of like-minded people.",
+      "findHousing": "Find Housing",
+      "postListing": "Post a Listing"
+    },
+    "search": {
+      "title": "Search with convenient filters",
+      "description": "Use our filters to quickly find the perfect living option",
+      "city": "City",
+      "selectCity": "Select city",
+      "price": "Price",
+      "from": "From",
+      "to": "To",
+      "rooms": "Rooms",
+      "anyNumber": "Any number",
+      "oneRoom": "1 room",
+      "twoRooms": "2 rooms",
+      "threeRooms": "3+ rooms",
+      "find": "Find",
+      "advancedSearch": "Advanced Search"
+    },
+    "featuredListings": {
+      "title": "Popular Options",
+      "viewAll": "View All",
+      "detail": "Details",
+      "roomsLabel": "rooms",
+      "floorLabel": "floor"
+    },
+    "problems": {
+      "title": "Problems We Solve",
+      "description": "Coli is designed to solve common problems when searching for housing and roommates",
+      "highPrice": {
+        "title": "High Cost of Housing",
+        "description": "Collaborative living significantly reduces housing costs for each participant."
+      },
+      "findingRoommates": {
+        "title": "Difficulty Finding Roommates",
+        "description": "Our questionnaires and matching system help find roommates with similar lifestyles."
+      },
+      "contractSecurity": {
+        "title": "Agreement Security",
+        "description": "Coli helps formalize agreements and protect the interests of all parties."
+      }
+    },
+    "cta": {
+      "title": "Do you have an apartment for rent?",
+      "description": "Post a listing and find reliable tenants or a group of roommates for your property.",
+      "button": "Post a Listing"
+    },
+    "advantages": {
+      "title": "Advantages of Coli",
+      "description": "Why you should choose our platform for finding housing and roommates",
+      "quickSearch": {
+        "title": "Quick Search",
+        "description": "Convenient filters for finding suitable options"
+      },
+      "compatibleRoommates": {
+        "title": "Compatible Roommates",
+        "description": "Questionnaires to find people with similar lifestyles"
+      },
+      "security": {
+        "title": "Security",
+        "description": "Verification of users and listings"
+      },
+      "convenience": {
+        "title": "Convenience",
+        "description": "Manage listings and responses online"
+      }
+    }
+  }
+}

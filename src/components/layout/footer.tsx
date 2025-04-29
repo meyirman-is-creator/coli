@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import {
@@ -7,8 +9,15 @@ import {
   GithubIcon,
   HeartIcon,
 } from "lucide-react";
+import { useClientTranslation } from "@/i18n/client"; // Исправленный импорт
 
-const Footer = () => {
+interface FooterProps {
+  locale?: "en" | "ru";
+}
+
+const Footer: React.FC<FooterProps> = ({ locale = "ru" }) => {
+  const { t } = useClientTranslation(locale);
+
   return (
     <footer className="bg-background border-t border-border">
       <div className="container-custom mx-auto py-10">
@@ -16,8 +25,9 @@ const Footer = () => {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">coli</h4>
             <p className="text-sm text-muted-foreground">
-              Сервис для поиска жилья и соседей - найдите идеальный вариант
-              проживания.
+              {locale === "en"
+                ? "Housing and roommate search service - find your ideal living option."
+                : "Сервис для поиска жилья и соседей - найдите идеальный вариант проживания."}
             </p>
             <div className="flex space-x-4">
               <Link
@@ -52,14 +62,16 @@ const Footer = () => {
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Навигация</h4>
+            <h4 className="text-lg font-semibold">
+              {locale === "en" ? "Navigation" : "Навигация"}
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Главная
+                  {locale === "en" ? "Home" : "Главная"}
                 </Link>
               </li>
               <li>
@@ -67,7 +79,7 @@ const Footer = () => {
                   href="/apartments"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Объявления
+                  {locale === "en" ? "Listings" : "Объявления"}
                 </Link>
               </li>
               <li>
@@ -75,21 +87,23 @@ const Footer = () => {
                   href="/profile/add/announcements"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Разместить объявление
+                  {locale === "en" ? "Post a Listing" : "Разместить объявление"}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Помощь</h4>
+            <h4 className="text-lg font-semibold">
+              {locale === "en" ? "Help" : "Помощь"}
+            </h4>
             <ul className="space-y-2 text-sm">
               <li>
                 <Link
                   href="/faq"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Часто задаваемые вопросы
+                  {locale === "en" ? "FAQ" : "Часто задаваемые вопросы"}
                 </Link>
               </li>
               <li>
@@ -97,7 +111,7 @@ const Footer = () => {
                   href="/support"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Поддержка
+                  {locale === "en" ? "Support" : "Поддержка"}
                 </Link>
               </li>
               <li>
@@ -105,20 +119,25 @@ const Footer = () => {
                   href="/guide"
                   className="text-muted-foreground hover:text-foreground transition-colors"
                 >
-                  Руководство пользователя
+                  {locale === "en" ? "User Guide" : "Руководство пользователя"}
                 </Link>
               </li>
             </ul>
           </div>
 
           <div className="space-y-4">
-            <h4 className="text-lg font-semibold">Контакты</h4>
+            <h4 className="text-lg font-semibold">
+              {locale === "en" ? "Contact" : "Контакты"}
+            </h4>
             <ul className="space-y-2 text-sm">
               <li className="text-muted-foreground">
-                Адрес: г. Москва, ул. Примерная, 123
+                {locale === "en"
+                  ? "Address: Moscow, Sample St., 123"
+                  : "Адрес: г. Москва, ул. Примерная, 123"}
               </li>
               <li className="text-muted-foreground">
-                Телефон: +7 (123) 456-78-90
+                {locale === "en" ? "Phone: " : "Телефон: "}
+                +7 (123) 456-78-90
               </li>
               <li className="text-muted-foreground">Email: info@coli.app</li>
             </ul>
@@ -127,35 +146,38 @@ const Footer = () => {
 
         <div className="mt-10 pt-6 border-t border-border flex flex-col md:flex-row justify-between items-center">
           <p className="text-sm text-muted-foreground">
-            &copy; {new Date().getFullYear()} coli. Все права защищены.
+            &copy; {new Date().getFullYear()} coli.
+            {locale === "en" ? " All rights reserved." : " Все права защищены."}
           </p>
           <div className="mt-4 md:mt-0 flex space-x-6 text-sm">
             <Link
               href="/privacy"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Политика конфиденциальности
+              {locale === "en"
+                ? "Privacy Policy"
+                : "Политика конфиденциальности"}
             </Link>
             <Link
               href="/terms"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Условия использования
+              {locale === "en" ? "Terms of Use" : "Условия использования"}
             </Link>
             <Link
               href="/cookies"
               className="text-muted-foreground hover:text-foreground transition-colors"
             >
-              Политика cookie
+              {locale === "en" ? "Cookie Policy" : "Политика cookie"}
             </Link>
           </div>
         </div>
 
         <div className="mt-6 text-center">
           <p className="text-xs text-muted-foreground flex items-center justify-center">
-            Сделано с
+            {locale === "en" ? "Made with " : "Сделано с "}
             <HeartIcon size={14} className="mx-1 text-destructive" />
-            для нашего сообщества
+            {locale === "en" ? " for our community" : " для нашего сообщества"}
           </p>
         </div>
       </div>

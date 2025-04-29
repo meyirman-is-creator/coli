@@ -7,12 +7,14 @@ import { Button } from "@/components/ui/button";
 import { Home, User, LogIn, PlusCircle, Search } from "lucide-react";
 import { AuthUser } from "@/types/auth";
 import { cn } from "@/lib/utils";
+import { useClientTranslation } from "@/i18n/client"; // Исправленный импорт
 
 interface MobileNavProps {
   isAuthenticated: boolean;
   user: AuthUser | null;
   navItems: { title: string; href: string; icon: React.ReactNode }[];
   onClose: () => void;
+  locale: "en" | "ru";
 }
 
 export const MobileNav: React.FC<MobileNavProps> = ({
@@ -20,45 +22,47 @@ export const MobileNav: React.FC<MobileNavProps> = ({
   user,
   navItems,
   onClose,
+  locale
 }) => {
   const pathname = usePathname();
+  const { t } = useClientTranslation(locale);
 
   const authItems = isAuthenticated
     ? [
         {
-          title: "Профиль",
+          title: t("header.profile"),
           href: "/profile",
           icon: <User className="mr-2 h-4 w-4" />,
         },
         {
-          title: "Мои объявления",
+          title: t("header.myListings"),
           href: "/profile/announcements",
           icon: <Search className="mr-2 h-4 w-4" />,
         },
         {
-          title: "Мои отклики",
+          title: t("header.myResponses"),
           href: "/profile/responses",
           icon: <PlusCircle className="mr-2 h-4 w-4" />,
         },
         {
-          title: "Разместить объявление",
+          title: t("header.postListing"),
           href: "/profile/add/announcements",
           icon: <PlusCircle className="mr-2 h-4 w-4" />,
         },
         {
-          title: "Выйти",
+          title: t("header.logout"),
           href: "/auth/logout",
           icon: <LogIn className="mr-2 h-4 w-4" />,
         },
       ]
     : [
         {
-          title: "Войти",
+          title: t("header.login"),
           href: "/auth/login",
           icon: <LogIn className="mr-2 h-4 w-4" />,
         },
         {
-          title: "Регистрация",
+          title: t("header.register"),
           href: "/auth/register",
           icon: <User className="mr-2 h-4 w-4" />,
         },
