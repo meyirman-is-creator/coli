@@ -1,9 +1,13 @@
+// src/store/services/authService.ts
 import {
   LoginCredentials,
   RegisterCredentials,
   ForgotPasswordRequest,
   ResetPasswordRequest,
+  VerifyCodeRequest,
+  VerifyEmailRequest,
   VerifyAccountRequest,
+  AuthUser
 } from "@/types/auth";
 
 // Mock API responses for now, will be replaced with actual API calls later
@@ -35,10 +39,19 @@ export const login = async (credentials: LoginCredentials) => {
   ) {
     throw new Error("Неверный email или пароль");
   }
+  
+  // Store the token in localStorage if rememberMe is true
+  if (credentials.rememberMe) {
+    localStorage.setItem("accessToken", mockToken);
+  } else {
+    // Use sessionStorage for session-only storage
+    sessionStorage.setItem("accessToken", mockToken);
+  }
 
   return {
     user: mockUserData,
     token: mockToken,
+    isSurveyCompleted: false,
   };
 };
 
@@ -49,22 +62,26 @@ export const register = async (credentials: RegisterCredentials) => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Check if passwords match
-  if (credentials.password !== credentials.confirmPassword) {
-    throw new Error("Пароли не совпадают");
+  // For demo purposes, just return success
+  return {
+    message: "Регистрация успешна. Проверьте вашу почту для подтверждения аккаунта."
+  };
+};
+
+/**
+ * Verify user account using code
+ */
+export const verifyEmail = async (verifyData: VerifyEmailRequest) => {
+  // Simulate API request
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // For demo purposes, check if it's a valid code (any 6-digit number)
+  if (!/^\d{6}$/.test(verifyData.code)) {
+    throw new Error("Неверный код подтверждения");
   }
 
-  // Simulate user creation
-  const newUser = {
-    ...mockUserData,
-    firstName: credentials.firstName,
-    lastName: credentials.lastName,
-    email: credentials.email,
-  };
-
   return {
-    user: newUser,
-    token: mockToken,
+    message: "Email успешно подтвержден",
   };
 };
 
@@ -74,6 +91,11 @@ export const register = async (credentials: RegisterCredentials) => {
 export const logout = async () => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 500));
+  
+  // Clear storage
+  localStorage.removeItem("accessToken");
+  sessionStorage.removeItem("accessToken");
+  
   return true;
 };
 
@@ -83,8 +105,26 @@ export const logout = async () => {
 export const forgotPassword = async (data: ForgotPasswordRequest) => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 1000));
+  
   return {
     message: "Инструкции по сбросу пароля отправлены на ваш email",
+  };
+};
+
+/**
+ * Verify reset code
+ */
+export const verifyResetCode = async (data: VerifyCodeRequest) => {
+  // Simulate API request
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+
+  // For demo purposes, check if it's a valid code (any 6-digit number)
+  if (!/^\d{6}$/.test(data.code)) {
+    throw new Error("Неверный код подтверждения");
+  }
+
+  return {
+    message: "Код подтвержден"
   };
 };
 
@@ -95,24 +135,48 @@ export const resetPassword = async (data: ResetPasswordRequest) => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 1000));
 
-  // Check if passwords match
-  if (data.password !== data.confirmPassword) {
-    throw new Error("Пароли не совпадают");
-  }
-
   return {
     message: "Пароль успешно изменен",
   };
 };
 
 /**
- * Verify user account
+ * Verify user account with token (email verification via link)
  */
 export const verifyAccount = async (data: VerifyAccountRequest) => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 1000));
+  
   return {
     message: "Аккаунт успешно подтвержден",
+  };
+};
+
+/**
+ * Resend verification code
+ */
+export const resendCode = async (email: string) => {
+  // Simulate API request
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+  return {
+    message: "Код подтверждения отправлен повторно",
+  };
+};
+
+/**
+ * Google login/register
+ */
+export const googleAuth = async (code: string) => {
+  // Simulate API request
+  await new Promise((resolve) => setTimeout(resolve, 1000));
+  
+  // Store the token
+  localStorage.setItem("accessToken", mockToken);
+  
+  return {
+    token: mockToken,
+    isSurveyCompleted: false,
   };
 };
 
@@ -122,5 +186,12 @@ export const verifyAccount = async (data: VerifyAccountRequest) => {
 export const getCurrentUser = async () => {
   // Simulate API request
   await new Promise((resolve) => setTimeout(resolve, 500));
+  
+  const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+  
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
+  
   return mockUserData;
 };

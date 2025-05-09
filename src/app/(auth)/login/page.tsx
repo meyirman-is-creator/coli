@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -8,32 +8,52 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useClientTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { login } from "@/store/slices/authSlice";
 import { Eye, EyeOff, LogIn, Mail, Lock } from "lucide-react";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [locale, setLocale] = useState<"en" | "ru">("ru");
-  const { t } = useClientTranslation(locale);
+  const { t } = useClientTranslation(locale, "auth");
   const router = useRouter();
   const dispatch = useAppDispatch();
   
-  const { status, error } = useAppSelector((state) => state.auth);
+  const { status, error, isAuthenticated } = useAppSelector((state) => state.auth);
   
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
+  // If user is already authenticated, redirect to home
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, router]);
+  
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // In a real app, we would dispatch the login action:
-    // await dispatch(login({ email, password, rememberMe }));
-    
-    // For now, just navigate to the home page
-    router.push("/");
+    try {
+      // Dispatch login action
+      const resultAction = await dispatch(login({ 
+        email, 
+        password, 
+        rememberMe 
+      }));
+      
+      // Check if login was successful
+      if (login.fulfilled.match(resultAction)) {
+        toast.success(t("auth.loginSuccess") || "Login successful");
+        router.push("/");
+      }
+    } catch (err) {
+      console.error("Login failed:", err);
+    }
   };
   
   return (
@@ -51,9 +71,9 @@ export default function LoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
-              <div className="p-3 rounded-lg bg-destructive/10 text-destructive text-sm">
-                {error}
-              </div>
+              <Alert variant="destructive">
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
             )}
             
             <div className="space-y-2">
@@ -151,7 +171,7 @@ export default function LoginPage() {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 gap-4">
             <Button variant="outline" type="button" className="space-x-2">
               <svg className="h-4 w-4" viewBox="0 0 24 24">
                 <path
@@ -173,14 +193,6 @@ export default function LoginPage() {
                 <path d="M1 1h22v22H1z" fill="none" />
               </svg>
               <span>{t("auth.google")}</span>
-            </Button>
-            
-            <Button variant="outline" type="button" className="space-x-2">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" className="bi bi-phone" viewBox="0 0 16 16">
-                <path d="M11 1a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V2a1 1 0 0 1 1-1h6zM5 0a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2H5z"/>
-                <path d="M8 14a1 1 0 1 0 0-2 1 1 0 0 0 0 2z"/>
-              </svg>
-              <span>{t("auth.phone")}</span>
             </Button>
           </div>
         </CardContent>

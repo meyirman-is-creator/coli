@@ -1,3 +1,4 @@
+// src/types/auth.ts
 export type AuthProvider = "email" | "google";
 
 export type LoginCredentials = {
@@ -10,6 +11,7 @@ export type RegisterCredentials = {
   firstName: string;
   lastName: string;
   email: string;
+  gender: string;
   password: string;
   confirmPassword: string;
 };
@@ -19,13 +21,23 @@ export type ForgotPasswordRequest = {
 };
 
 export type ResetPasswordRequest = {
-  token: string;
+  email: string;
   password: string;
   confirmPassword: string;
 };
 
 export type VerifyAccountRequest = {
   token: string;
+};
+
+export type VerifyCodeRequest = {
+  email: string;
+  code: string;
+};
+
+export type VerifyEmailRequest = {
+  email: string;
+  code: string;
 };
 
 export type AuthUser = {
@@ -44,6 +56,7 @@ export type AuthState = {
   user: AuthUser | null;
   token: string | null;
   isAuthenticated: boolean;
+  isSurveyCompleted: boolean;
   status: "idle" | "loading" | "succeeded" | "failed";
   error: string | null;
 };
