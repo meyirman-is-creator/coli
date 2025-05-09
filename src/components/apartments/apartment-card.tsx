@@ -26,45 +26,34 @@ import {
   Check,
   Star,
   ArrowRight,
-  Heart
+  Heart,
+  Building
 } from "lucide-react";
-import { formatPrice } from "@/utils/helpers";
 
-export interface ApartmentCardProps {
-  card?: {
+interface ApartmentCardProps {
+  card: {
     announcementId: number;
     image: string;
     title: string;
     address: string;
-    arriveDate: string;
+    arriveDate: string | null;
     roomCount: string;
     selectedGender: string;
     roommates: number;
     cost: number;
-    coordsX?: string;
-    coordsY?: string;
-    isArchived?: boolean;
-    consideringOnlyNPeople?: boolean;
+    coordsX: string;
+    coordsY: string;
+    isArchived: boolean;
+    consideringOnlyNPeople: boolean;
   };
   variant?: "default" | "compact" | "featured";
   className?: string;
   onFavoriteToggle?: (id: number) => void;
   isFavorite?: boolean;
 }
-const defaultCard = {
-    announcementId: 0,
-    image: "/api/placeholder/400/300",
-    title: "Loading...",
-    address: "Loading...",
-    arriveDate: "Loading...",
-    roomCount: "0",
-    selectedGender: "ANY",
-    roommates: 0,
-    cost: 0
-  };
 
 export default function ApartmentCard({
-  card = defaultCard,
+  card,
   variant = "default",
   className = "",
   onFavoriteToggle,
@@ -74,6 +63,18 @@ export default function ApartmentCard({
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
   const [shareUrl, setShareUrl] = useState("");
+  
+  // Format available date
+  const formatDate = (dateString: string | null) => {
+    if (!dateString) return "Не указано";
+    const date = new Date(dateString);
+    return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+  };
+  
+  // Format price
+  const formatPrice = (price: number) => {
+    return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " ₸";
+  };
   
   // Initialize the share URL when needed
   const handleShareClick = () => {
@@ -93,12 +94,12 @@ export default function ApartmentCard({
     }
   };
 
+  // Get gender label
   const getGenderLabel = (gender: string): string => {
     const genderMap: Record<string, string> = {
       "MALE": "Мужской",
       "FEMALE": "Женский",
-      "ANY": "Любой пол",
-      "OTHER": "Другой"
+      "OTHER": "Любой пол"
     };
     return genderMap[gender] || "Любой пол";
   };
@@ -124,7 +125,7 @@ export default function ApartmentCard({
               <h3 className="font-medium text-sm line-clamp-1">{card.title}</h3>
               <div className="flex items-center text-xs text-muted-foreground mt-1">
                 <MapPin className="h-3 w-3 mr-1 flex-shrink-0" />
-                <span className="truncate">{card.address}</span>
+                <span className="truncate">{card.address || "Адрес не указан"}</span>
               </div>
             </div>
             
@@ -191,14 +192,16 @@ export default function ApartmentCard({
             <h3 className="text-lg font-semibold mb-2 line-clamp-1">{card.title}</h3>
             <div className="flex items-center text-sm text-muted-foreground mb-4">
               <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="truncate">{card.address}</span>
+              <span className="truncate">{card.address || "Адрес не указан"}</span>
             </div>
             
             <div className="grid grid-cols-2 gap-y-2 mb-4">
-              <div className="flex items-center text-sm">
-                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span>{card.arriveDate}</span>
-              </div>
+              {card.arriveDate && (
+                <div className="flex items-center text-sm">
+                  <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                  <span>{formatDate(card.arriveDate)}</span>
+                </div>
+              )}
               <div className="flex items-center text-sm">
                 <Home className="h-4 w-4 mr-2 text-muted-foreground" />
                 <span>{card.roomCount} комнат{Number(card.roomCount) > 1 ? 'ы' : 'а'}</span>
@@ -255,9 +258,9 @@ export default function ApartmentCard({
       onMouseEnter={() => setIsHovered(true)} 
       onMouseLeave={() => setIsHovered(false)}
     >
-      <div className="flex flex-col md:flex-row h-full">
-        <div className="relative md:w-2/5">
-          <div className="w-full h-48 md:h-full overflow-hidden">
+      <div className="flex flex-col h-full">
+        <div className="relative">
+          <div className="w-full h-48 overflow-hidden">
             <img
               src={card.image || "/api/placeholder/400/300"}
               alt={card.title}
@@ -286,20 +289,22 @@ export default function ApartmentCard({
           </div>
         </div>
         
-        <CardContent className="p-5 md:w-3/5 flex flex-col h-full">
+        <CardContent className="p-5 flex flex-col flex-grow">
           <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
           <div className="flex items-center text-sm text-muted-foreground mb-4">
             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span>{card.address}</span>
+            <span>{card.address || "Адрес не указан"}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-y-2 gap-x-4 mb-6">
+            {card.arriveDate && (
+              <div className="flex items-center text-sm">
+                <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
+                <span>{formatDate(card.arriveDate)}</span>
+              </div>
+            )}
             <div className="flex items-center text-sm">
-              <Calendar className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span>{card.arriveDate}</span>
-            </div>
-            <div className="flex items-center text-sm">
-              <Home className="h-4 w-4 mr-2 text-muted-foreground" />
+              <Building className="h-4 w-4 mr-2 text-muted-foreground" />
               <span>{card.roomCount} комнат{Number(card.roomCount) > 1 ? 'ы' : 'а'}</span>
             </div>
             <div className="flex items-center text-sm col-span-2">
@@ -315,7 +320,7 @@ export default function ApartmentCard({
           )}
 
           <div className="mt-auto">
-            <Button className="w-full md:w-auto" asChild>
+            <Button className="w-full" asChild>
               <Link href={`/apartments/${card.announcementId}`} className="flex items-center justify-center">
                 Узнать больше
                 <ArrowRight className={`h-4 w-4 ml-2 transition-transform ${isHovered ? 'translate-x-1' : ''}`} />
