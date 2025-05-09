@@ -27,7 +27,8 @@ import {
   Star,
   ArrowRight,
   Heart,
-  Building
+  Building,
+  VenusAndMars
 } from "lucide-react";
 
 interface ApartmentCardProps {
@@ -307,9 +308,13 @@ export default function ApartmentCard({
               <Building className="h-4 w-4 mr-2 text-muted-foreground" />
               <span>{card.roomCount} комнат{Number(card.roomCount) > 1 ? 'ы' : 'а'}</span>
             </div>
-            <div className="flex items-center text-sm col-span-2">
+            <div className="flex items-center text-sm">
+              <VenusAndMars className="h-4 w-4 mr-2 text-muted-foreground" />
+              <span>{getGenderLabel(card.selectedGender)} чел.</span>
+            </div>
+            <div className="flex items-center text-sm">
               <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span>{getGenderLabel(card.selectedGender)} · {card.roommates} чел.</span>
+              <span>{card.roommates} чел.</span>
             </div>
           </div>
           

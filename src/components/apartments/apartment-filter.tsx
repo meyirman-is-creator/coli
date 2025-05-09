@@ -51,6 +51,20 @@ import { RangeSlider } from "@/components/ui/range-slider";
 import { DatePicker } from "@/components/ui/date-picker";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
+// Property type options
+const propertyTypeOptions = [
+  { id: 1, namerus: "Квартира", namekaz: "Пәтер", code: "APARTMENT" },
+  { id: 2, namerus: "Дом", namekaz: "Үй", code: "HOUSE" },
+  { id: 3, namerus: "Комната", namekaz: "Бөлме", code: "ROOM" },
+  { id: 4, namerus: "Студия", namekaz: "Студия", code: "STUDIO" },
+];
+
+// Owner type options
+const ownerTypeOptions = [
+  { id: 1, namerus: "От хозяев", namekaz: "Иелерден", code: "OWNER" },
+  { id: 2, namerus: "От жителей", namekaz: "Тұрғындардан", code: "RESIDENT" },
+];
+
 /**
  * Interface for the filter component props
  */
@@ -86,7 +100,6 @@ export default function ApartmentFilter({
   
   // Filter state - grouped by categories for better organization
   // Basic filter criteria
-  const [gender, setGender] = useState<string | null>(initialFilter.gender || null);
   const [rooms, setRooms] = useState<number>(initialFilter.roomsMin || 1);
   const [roommates, setRoommates] = useState<number | null>(initialFilter.roommates?.id || null);
   
@@ -140,6 +153,7 @@ export default function ApartmentFilter({
     { id: 1, namerus: "Москва" },
     { id: 2, namerus: "Санкт-Петербург" },
     { id: 3, namerus: "Казань" },
+    { id: 4, namerus: "Алматы" },
   ]);
   const [districts, setDistricts] = useState<any[]>([]);
   const [microDistricts, setMicroDistricts] = useState<any[]>([]);
@@ -168,7 +182,6 @@ export default function ApartmentFilter({
     
     if (roommates) count++;
     if (rooms > 1) count++;
-    if (gender) count++;
     
     if (moveInDate) count++;
     
@@ -190,7 +203,7 @@ export default function ApartmentFilter({
     setActiveFiltersCount(count);
   }, [
     selectedRegion, selectedDistrict, selectedMicroDistrict,
-    priceRange, roommates, rooms, gender, moveInDate,
+    priceRange, roommates, rooms, moveInDate,
     minArea, maxArea, minFloor, maxFloor, isNotFirstFloor, isNotLastFloor,
     apartmentType, leaseType,
     petsAllowed, utilitiesIncluded, forStudents, badHabitsAllowed
@@ -206,11 +219,21 @@ export default function ApartmentFilter({
 
     // Mock districts based on selected region (in a real app, this would be an API call)
     if (regionId && regionId !== "any") {
-      setDistricts([
-        { id: 1, namerus: "Центральный" },
-        { id: 2, namerus: "Северный" },
-        { id: 3, namerus: "Южный" },
-      ]);
+      const districtsByRegion: { [key: string]: any[] } = {
+        "1": [
+          { id: 1, namerus: "Центральный" },
+          { id: 2, namerus: "Северный" },
+          { id: 3, namerus: "Южный" },
+        ],
+        "4": [
+          { id: 4, namerus: "Алмалинский" },
+          { id: 5, namerus: "Ауэзовский" },
+          { id: 6, namerus: "Бостандыкский" },
+          { id: 7, namerus: "Медеуский" },
+        ]
+      };
+      
+      setDistricts(districtsByRegion[regionId] || []);
     } else {
       setDistricts([]);
     }
@@ -236,11 +259,25 @@ export default function ApartmentFilter({
 
     // Mock microdistricts based on selected district
     if (districtId && districtId !== "any") {
-      setMicroDistricts([
-        { id: 1, namerus: "Район А" },
-        { id: 2, namerus: "Район Б" },
-        { id: 3, namerus: "Район В" },
-      ]);
+      const microDistrictsByDistrict: { [key: string]: any[] } = {
+        "1": [
+          { id: 1, namerus: "Район А" },
+          { id: 2, namerus: "Район Б" },
+          { id: 3, namerus: "Район В" },
+        ],
+        "6": [
+          { id: 4, namerus: "Орбита" },
+          { id: 5, namerus: "Коктем" },
+          { id: 6, namerus: "Керемет" },
+        ],
+        "7": [
+          { id: 7, namerus: "Самал" },
+          { id: 8, namerus: "Достык" },
+          { id: 9, namerus: "Горный Гигант" },
+        ]
+      };
+      
+      setMicroDistricts(microDistrictsByDistrict[districtId] || []);
     } else {
       setMicroDistricts([]);
     }
@@ -351,14 +388,6 @@ export default function ApartmentFilter({
   }, []);
 
   /**
-   * Set the gender filter
-   */
-  const handleGenderSelect = useCallback((value: string) => {
-    const genderValue = value === "" || value === "any" ? null : value;
-    setGender(genderValue);
-  }, []);
-
-  /**
    * Format currency for display
    */
   const formatCurrency = useCallback((value: number) => {
@@ -393,7 +422,6 @@ export default function ApartmentFilter({
   const handleReset = useCallback(() => {
     // Reset all local state to default values
     setRooms(1);
-    setGender(null);
     setMoveInDate(undefined);
     setPriceRange([0, 500000]);
     setAgeRange([18, 60]);
@@ -450,7 +478,6 @@ export default function ApartmentFilter({
       priceMin: priceRange[0],
       priceMax: priceRange[1],
       roomsMin: rooms,
-      gender,
       availableFrom: moveInDate?.toISOString(),
       minAge: ageRange[0],
       maxAge: ageRange[1],
@@ -472,7 +499,7 @@ export default function ApartmentFilter({
         : undefined,
     };
   }, [
-    priceRange, rooms, gender, moveInDate, ageRange, 
+    priceRange, rooms, moveInDate, ageRange, 
     petsAllowed, address, apartmentType, leaseType,
     minArea, maxArea, minFloor, maxFloor, 
     isNotFirstFloor, isNotLastFloor, utilitiesIncluded,
@@ -523,23 +550,11 @@ export default function ApartmentFilter({
       filters.push({ label: `${rooms} комнат`, key: "rooms" });
     }
     
-    if (gender) {
-      const genderLabels: Record<string, string> = {
-        "male": "Мужской",
-        "female": "Женский",
-        "other": "Другой"
-      };
-      filters.push({ label: genderLabels[gender] || "Пол", key: "gender" });
-    }
-    
     if (apartmentType) {
-      const typeLabels: Record<string, string> = {
-        "apartment": "Квартира",
-        "room": "Комната",
-        "studio": "Студия",
-        "house": "Дом"
-      };
-      filters.push({ label: typeLabels[apartmentType] || "Тип жилья", key: "type" });
+      const propertyType = propertyTypeOptions.find(t => t.code.toLowerCase() === apartmentType);
+      if (propertyType) {
+        filters.push({ label: propertyType.namerus, key: "type" });
+      }
     }
     
     return (
@@ -761,31 +776,6 @@ export default function ApartmentFilter({
                     </Button>
                   </div>
                 </div>
-                
-                <div>
-                  <Label className="mb-2 block">
-                    {t("filter.gender", "Пол")}
-                  </Label>
-                  <Select value={gender || ""} onValueChange={handleGenderSelect}>
-                    <SelectTrigger>
-                      <SelectValue placeholder={t("filter.anyGender", "Любой пол")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="any">
-                        {t("filter.anyGender", "Любой пол")}
-                      </SelectItem>
-                      <SelectItem value="male">
-                        {t("filter.male", "Мужской")}
-                      </SelectItem>
-                      <SelectItem value="female">
-                        {t("filter.female", "Женский")}
-                      </SelectItem>
-                      <SelectItem value="other">
-                        {t("filter.other", "Другой")}
-                      </SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
               </AccordionContent>
             </AccordionItem>
             
@@ -799,41 +789,37 @@ export default function ApartmentFilter({
               <AccordionContent className="px-4 py-3 pt-0 space-y-3">
                 <div>
                   <Label className="mb-2 block">Тип недвижимости</Label>
-                  <div className="mt-2">
-                    <Tabs
-                      defaultValue={apartmentType || "any"}
-                      onValueChange={(value) =>
-                        handlePropertyTypeSelect(value === "any" ? null : value)
-                      }
-                      className="w-full"
-                    >
-                      <TabsList className="grid w-full grid-cols-4 h-auto">
-                        <TabsTrigger value="any" className="py-1.5 text-xs">Любой</TabsTrigger>
-                        <TabsTrigger value="apartment" className="py-1.5 text-xs">Квартира</TabsTrigger>
-                        <TabsTrigger value="room" className="py-1.5 text-xs">Комната</TabsTrigger>
-                        <TabsTrigger value="studio" className="py-1.5 text-xs">Студия</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
+                  <Tabs
+                    defaultValue={apartmentType || "any"}
+                    onValueChange={(value) =>
+                      handlePropertyTypeSelect(value === "any" ? null : value)
+                    }
+                    className="w-full"
+                  >
+                    <TabsList className="grid w-full grid-cols-4 h-auto">
+                      <TabsTrigger value="any" className="py-1.5 text-xs">Любой</TabsTrigger>
+                      <TabsTrigger value="apartment" className="py-1.5 text-xs">Квартира</TabsTrigger>
+                      <TabsTrigger value="room" className="py-1.5 text-xs">Комната</TabsTrigger>
+                      <TabsTrigger value="studio" className="py-1.5 text-xs">Студия</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
                 
                 <div>
                   <Label className="mb-2 block">Продолжительность</Label>
-                  <div className="mt-2">
-                    <Tabs
-                      defaultValue={leaseType || "any"}
-                      onValueChange={(value) =>
-                        handleTermTypeSelect(value === "any" ? null : value)
-                      }
-                      className="w-full"
-                    >
-                      <TabsList className="grid w-full grid-cols-3 h-auto">
-                        <TabsTrigger value="any" className="py-1.5 text-xs">Любая</TabsTrigger>
-                        <TabsTrigger value="long" className="py-1.5 text-xs">Долгосрочная</TabsTrigger>
-                        <TabsTrigger value="short" className="py-1.5 text-xs">Краткосрочная</TabsTrigger>
-                      </TabsList>
-                    </Tabs>
-                  </div>
+                  <Tabs
+                    defaultValue={leaseType || "any"}
+                    onValueChange={(value) =>
+                      handleTermTypeSelect(value === "any" ? null : value)
+                    }
+                    className="w-full"
+                  >
+                    <TabsList className="grid w-full grid-cols-3 h-auto">
+                      <TabsTrigger value="any" className="py-1.5 text-xs">Без разницы</TabsTrigger>
+                      <TabsTrigger value="long" className="py-1.5 text-xs">Долгосрочно</TabsTrigger>
+                      <TabsTrigger value="short" className="py-1.5 text-xs">Краткосрочно</TabsTrigger>
+                    </TabsList>
+                  </Tabs>
                 </div>
               </AccordionContent>
             </AccordionItem>
@@ -869,45 +855,45 @@ export default function ApartmentFilter({
               </AccordionTrigger>
               <AccordionContent className="px-4 py-3 pt-0">
                 <div className="space-y-3">
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="petsAllowed">
+                      {t("filter.petsAllowed", "Можно с животными")}
+                    </Label>
                     <Switch
                       id="petsAllowed"
                       checked={petsAllowed}
                       onCheckedChange={setPetsAllowed}
                     />
-                    <Label htmlFor="petsAllowed">
-                      {t("filter.petsAllowed", "Можно с животными")}
-                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="utilitiesIncluded">
+                      {t("filter.utilitiesIncluded", "Коммунальные включены")}
+                    </Label>
                     <Switch
                       id="utilitiesIncluded"
                       checked={utilitiesIncluded}
                       onCheckedChange={setUtilitiesIncluded}
                     />
-                    <Label htmlFor="utilitiesIncluded">
-                      {t("filter.utilitiesIncluded", "Коммунальные включены")}
-                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="forStudents">
+                      {t("filter.forStudents", "Для студентов")}
+                    </Label>
                     <Switch
                       id="forStudents"
                       checked={forStudents}
                       onCheckedChange={setForStudents}
                     />
-                    <Label htmlFor="forStudents">
-                      {t("filter.forStudents", "Для студентов")}
-                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
+                  <div className="flex items-center justify-between">
+                    <Label htmlFor="badHabitsAllowed">
+                      {t("filter.badHabitsAllowed", "Можно курить")}
+                    </Label>
                     <Switch
                       id="badHabitsAllowed"
                       checked={badHabitsAllowed}
                       onCheckedChange={setBadHabitsAllowed}
                     />
-                    <Label htmlFor="badHabitsAllowed">
-                      {t("filter.badHabitsAllowed", "Можно курить")}
-                    </Label>
                   </div>
                 </div>
               </AccordionContent>
@@ -935,7 +921,7 @@ export default function ApartmentFilter({
 
   // Desktop view with more details
   return (
-    <Card className={`bg-card rounded-lg border p-4 md:p-6 shadow-sm ${className}`}>
+    <Card className={`bg-card rounded-lg border p-4 md:p-6 shadow-sm w-full ${className}`}>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
           <h2 className="text-lg font-semibold">{t("filter.title", "Фильтр")}</h2>
@@ -1189,29 +1175,6 @@ export default function ApartmentFilter({
                 </Button>
               </div>
             </div>
-
-            <div>
-              <Label className="mb-2 block">{t("filter.gender", "Пол")}</Label>
-              <Select value={gender || ""} onValueChange={handleGenderSelect}>
-                <SelectTrigger className="bg-background">
-                  <SelectValue placeholder={t("filter.anyGender", "Любой пол")} />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="any">
-                    {t("filter.anyGender", "Любой пол")}
-                  </SelectItem>
-                  <SelectItem value="male">
-                    {t("filter.male", "Мужской")}
-                  </SelectItem>
-                  <SelectItem value="female">
-                    {t("filter.female", "Женский")}
-                  </SelectItem>
-                  <SelectItem value="other">
-                    {t("filter.other", "Другой")}
-                  </SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
           </AccordionContent>
         </AccordionItem>
 
@@ -1257,13 +1220,13 @@ export default function ApartmentFilter({
               >
                 <TabsList className="grid w-full grid-cols-3 h-auto">
                   <TabsTrigger value="any" className="py-2">
-                    Любая
+                    Без разницы
                   </TabsTrigger>
                   <TabsTrigger value="long" className="py-2">
-                    Долгосрочная
+                    Долгосрочно
                   </TabsTrigger>
                   <TabsTrigger value="short" className="py-2">
-                    Краткосрочная
+                    Краткосрочно
                   </TabsTrigger>
                 </TabsList>
               </Tabs>
@@ -1339,7 +1302,7 @@ export default function ApartmentFilter({
                   />
                 </div>
               </div>
-              <div className="flex items-center space-x-4 mt-2">
+              <div className="flex flex-col space-y-2 md:flex-row md:space-y-0 md:space-x-4">
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="notFirstFloor"
@@ -1457,45 +1420,45 @@ export default function ApartmentFilter({
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 pt-2">
             <div className="space-y-4">
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="petsAllowed" className="cursor-pointer">
+                  {t("filter.petsAllowed", "Можно с животными")}
+                </Label>
                 <Switch
                   id="petsAllowed"
                   checked={petsAllowed}
                   onCheckedChange={setPetsAllowed}
                 />
-                <Label htmlFor="petsAllowed" className="cursor-pointer">
-                  {t("filter.petsAllowed", "Можно с животными")}
-                </Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="utilitiesIncluded" className="cursor-pointer">
+                  {t("filter.utilitiesIncluded", "Коммунальные включены")}
+                </Label>
                 <Switch
                   id="utilitiesIncluded"
                   checked={utilitiesIncluded}
                   onCheckedChange={setUtilitiesIncluded}
                 />
-                <Label htmlFor="utilitiesIncluded" className="cursor-pointer">
-                  {t("filter.utilitiesIncluded", "Коммунальные включены")}
-                </Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="forStudents" className="cursor-pointer">
+                  {t("filter.forStudents", "Для студентов")}
+                </Label>
                 <Switch
                   id="forStudents"
                   checked={forStudents}
                   onCheckedChange={setForStudents}
                 />
-                <Label htmlFor="forStudents" className="cursor-pointer">
-                  {t("filter.forStudents", "Для студентов")}
-                </Label>
               </div>
-              <div className="flex items-center space-x-2">
+              <div className="flex items-center justify-between">
+                <Label htmlFor="badHabitsAllowed" className="cursor-pointer">
+                  {t("filter.badHabitsAllowed", "Можно курить")}
+                </Label>
                 <Switch
                   id="badHabitsAllowed"
                   checked={badHabitsAllowed}
                   onCheckedChange={setBadHabitsAllowed}
                 />
-                <Label htmlFor="badHabitsAllowed" className="cursor-pointer">
-                  {t("filter.badHabitsAllowed", "Можно курить")}
-                </Label>
               </div>
             </div>
           </AccordionContent>
