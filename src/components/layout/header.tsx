@@ -12,7 +12,6 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
-import { ModeToggle } from "@/components/ui/mode-toggle";
 import {
   Home,
   User,
@@ -27,9 +26,10 @@ import {
 import { MobileNav } from "./mobile-nav";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { cn } from "@/lib/utils";
-import SearchBar from "@/components/ui/search-bar";
+import SearchBar from "@/components/common/search-bar";
 import { useClientTranslation } from "@/i18n/client";
 import { fetchCities } from "@/store/slices/addressSlice";
+import { ModeToggle } from "../common/mode-toggle";
 
 const Header = () => {
   const pathname = usePathname();
@@ -210,7 +210,7 @@ const Header = () => {
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/auth/logout" className="cursor-pointer">
+                    <Link href="/logout" className="cursor-pointer">
                       <LogOut className="mr-2 h-4 w-4" />
                       <span>{t("header.logout")}</span>
                     </Link>
@@ -220,7 +220,7 @@ const Header = () => {
             </>
           ) : (
             <Button asChild className="hidden md:flex">
-              <Link href="/auth/login">
+              <Link href="/login">
                 <LogIn className="mr-2 h-4 w-4" />
                 {t("header.login")}
               </Link>

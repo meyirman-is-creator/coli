@@ -1,21 +1,19 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useClientTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
-import {
-  fetchApartments,
-  setPage,
-  setLimit,
-} from "@/store/slices/apartmentSlice";
-import { ApartmentCard } from "@/components/ui/ApartmentCard";
-import Map from "@/components/ui/Map";
-import Filter from "./apartments/Filter";
 import { Button } from "@/components/ui/button";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { useClientTranslation, useTranslation } from "@/i18n";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import { useMediaQuery } from "react-responsive";
-import { Apartment, ApartmentFilter } from "@/types/apartment";
 import {
   MapIcon,
   ListIcon,
@@ -24,13 +22,13 @@ import {
   ChevronDown,
   SlidersHorizontal,
 } from "lucide-react";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import { useRouter } from "next/navigation";
+
+import ApartmentFilter from "@/components/apartments/apartment-filter";
+import ApartmentCard from "@/components/apartments/apartment-card";
+import Map from "@/components/apartments/map";
+
+// Temporarily comment out the Redux actions until we're ready to connect to backend
+// import { fetchApartments, setPage, setLimit } from "@/store/slices/apartmentSlice";
 
 export default function ApartmentsPage() {
   const [locale, setLocale] = useState<"en" | "ru">("ru");
@@ -38,10 +36,107 @@ export default function ApartmentsPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
 
-  const { apartments, status, totalCount, page, limit } = useAppSelector(
-    (state) => state.apartment
-  );
-  const filterState = useAppSelector((state) => state.filter);
+  // For now, use mock data instead of Redux state
+  // const { apartments, status, totalCount, page, limit } = useAppSelector(
+  //   (state) => state.apartment
+  // );
+  // const filterState = useAppSelector((state) => state.filter);
+
+  // Mock data
+  const [apartments, setApartments] = useState([
+    {
+      id: "1",
+      title: "Уютная 2-комнатная квартира в центре",
+      description: "Светлая квартира с современным ремонтом в историческом центре города.",
+      type: "apartment",
+      price: 65000,
+      currency: "RUB",
+      location: {
+        cityName: "Москва",
+        address: "ул. Арбат, 24"
+      },
+      rooms: 2,
+      bathrooms: 1,
+      area: 60,
+      maxOccupants: 3,
+      availableFrom: "2025-05-01T00:00:00Z",
+      features: ["wifi", "washing_machine"],
+      photos: [
+        {
+          id: "photo1",
+          url: "/api/placeholder/800/600",
+          isMain: true
+        }
+      ],
+      owner: {
+        name: "Алексей Петров",
+        photoUrl: "/api/placeholder/100/100"
+      }
+    },
+    {
+      id: "2",
+      title: "Просторная комната в 3-комнатной квартире",
+      description: "Ищем соседа в трехкомнатную квартиру. Комната светлая, с балконом.",
+      type: "room",
+      price: 25000,
+      currency: "RUB",
+      location: {
+        cityName: "Москва",
+        address: "ул. Ленина, 43"
+      },
+      rooms: 1,
+      bathrooms: 1,
+      area: 18,
+      maxOccupants: 1,
+      availableFrom: "2025-05-15T00:00:00Z",
+      features: ["wifi", "washing_machine"],
+      photos: [
+        {
+          id: "photo3",
+          url: "/api/placeholder/800/600",
+          isMain: true
+        }
+      ],
+      owner: {
+        name: "Ирина Смирнова",
+        photoUrl: "/api/placeholder/100/100"
+      }
+    },
+    {
+      id: "3",
+      title: "Студия в новом ЖК",
+      description: "Современная студия с панорамными окнами и видом на парк.",
+      type: "studio",
+      price: 45000,
+      currency: "RUB",
+      location: {
+        cityName: "Москва",
+        address: "Проспект Мира, 120"
+      },
+      rooms: 1,
+      bathrooms: 1,
+      area: 30,
+      maxOccupants: 2,
+      availableFrom: "2025-05-10T00:00:00Z",
+      features: ["parking", "wifi", "air_conditioning"],
+      photos: [
+        {
+          id: "photo4",
+          url: "/api/placeholder/800/600",
+          isMain: true
+        }
+      ],
+      owner: {
+        name: "Алексей Петров",
+        photoUrl: "/api/placeholder/100/100"
+      }
+    }
+  ]);
+  
+  const [status, setStatus] = useState("succeeded");
+  const [totalCount, setTotalCount] = useState(3);
+  const [page, setPage] = useState(1);
+  const [limit, setLimit] = useState(12);
 
   const [view, setView] = useState<"list" | "map">("list");
   const [selectedPoints, setSelectedPoints] = useState<
@@ -52,74 +147,81 @@ export default function ApartmentsPage() {
   const isMobile = useMediaQuery({ maxWidth: 768 });
   const isTablet = useMediaQuery({ minWidth: 769, maxWidth: 1024 });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      dispatch(
-        fetchApartments({
-          filter: {
-            ...(filterState as ApartmentFilter),
-            selectedMapPoints: selectedPoints,
-          },
-          page: 1,
-          limit: 12,
-        })
-      );
-    };
-
-    fetchData();
-  }, [dispatch, filterState, sortOrder]);
-
+  // Mock the loading and data fetching
   const handleLoadMore = () => {
-    if (status !== "loading") {
-      dispatch(setPage(page + 1));
-      dispatch(
-        fetchApartments({
-          filter: {
-            ...(filterState as ApartmentFilter),
-            selectedMapPoints: selectedPoints,
-          },
-          page: page + 1,
-          limit,
-        })
-      );
-    }
+    setStatus("loading");
+    
+    // Simulate loading new data
+    setTimeout(() => {
+      setStatus("succeeded");
+      setPage(page + 1);
+      
+      // Simulate adding new apartments
+      if (page < 3) {
+        setApartments([...apartments, ...apartments.slice(0, 2)]);
+        setTotalCount(totalCount + 2);
+      }
+    }, 1000);
   };
 
   const handleFilterSubmit = (filterData: any) => {
     console.log("Filter submitted:", filterData);
+    
+    // Simulate filtering process
+    setStatus("loading");
+    
+    setTimeout(() => {
+      setStatus("succeeded");
+      // In a real app, we'd filter the apartments based on the filter data
+    }, 1000);
   };
 
   const handleMapPointsSelected = (points: { x: number; y: number }[]) => {
     setSelectedPoints(points);
-
-    dispatch(
-      fetchApartments({
-        filter: {
-          ...(filterState as ApartmentFilter),
-          selectedMapPoints: points,
-        },
-        page: 1,
-        limit,
-      })
-    );
+    // Simulate data fetching after map points selection
+    setStatus("loading");
+    
+    setTimeout(() => {
+      setStatus("succeeded");
+      // In a real app, we'd update the apartments based on the selected points
+    }, 1000);
   };
 
-  const handleMarkerClick = (apartment: Apartment) => {
+  const handleMarkerClick = (apartment: any) => {
     router.push(`/apartments/${apartment.id}`);
   };
 
   const sortOptions = [
-    { value: "newest", label: t("sort.newest") },
-    { value: "price-asc", label: t("sort.priceAsc") },
-    { value: "price-desc", label: t("sort.priceDesc") },
-    { value: "relevance", label: t("sort.relevance") },
+    { value: "newest", label: t("sort.newest", "Новые") },
+    { value: "price-asc", label: t("sort.priceAsc", "Цена: по возрастанию") },
+    { value: "price-desc", label: t("sort.priceDesc", "Цена: по убыванию") },
+    { value: "relevance", label: t("sort.relevance", "По релевантности") },
   ];
+
+  const handleSort = (value: string) => {
+    setSortOrder(value);
+    setStatus("loading");
+    
+    setTimeout(() => {
+      setStatus("succeeded");
+      
+      // Simulate sorting
+      let sortedApartments = [...apartments];
+      if (value === "price-asc") {
+        sortedApartments.sort((a, b) => a.price - b.price);
+      } else if (value === "price-desc") {
+        sortedApartments.sort((a, b) => b.price - a.price);
+      }
+      
+      setApartments(sortedApartments);
+    }, 500);
+  };
 
   return (
     <div className="container-custom">
       <div className="py-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">{t("apartments.title")}</h1>
+          <h1 className="text-2xl font-bold">{t("apartments.title", "Поиск жилья")}</h1>
 
           <div className="flex items-center gap-2">
             <Tabs
@@ -130,11 +232,11 @@ export default function ApartmentsPage() {
               <TabsList>
                 <TabsTrigger value="list">
                   <ListIcon className="h-4 w-4 mr-2" />
-                  {t("view.list")}
+                  {t("view.list", "Список")}
                 </TabsTrigger>
                 <TabsTrigger value="map">
                   <MapIcon className="h-4 w-4 mr-2" />
-                  {t("view.map")}
+                  {t("view.map", "Карта")}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -165,7 +267,7 @@ export default function ApartmentsPage() {
                 {sortOptions.map((option) => (
                   <DropdownMenuItem
                     key={option.value}
-                    onClick={() => setSortOrder(option.value)}
+                    onClick={() => handleSort(option.value)}
                   >
                     {option.label}
                   </DropdownMenuItem>
@@ -181,7 +283,7 @@ export default function ApartmentsPage() {
                   </Button>
                 </SheetTrigger>
                 <SheetContent side="bottom" className="h-[80vh] overflow-auto">
-                  <Filter onSubmit={handleFilterSubmit} />
+                  <ApartmentFilter onSubmit={handleFilterSubmit} />
                 </SheetContent>
               </Sheet>
             )}
@@ -191,7 +293,7 @@ export default function ApartmentsPage() {
         <div className="grid grid-cols-1 md:grid-cols-[300px_1fr] gap-6">
           {!isMobile && (
             <div className="hidden md:block">
-              <Filter onSubmit={handleFilterSubmit} />
+              <ApartmentFilter onSubmit={handleFilterSubmit} />
             </div>
           )}
 
@@ -199,8 +301,8 @@ export default function ApartmentsPage() {
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-muted-foreground">
                 {status === "loading" && page === 1
-                  ? t("apartments.loading")
-                  : t("apartments.found", { count: totalCount })}
+                  ? t("apartments.loading", "Загрузка...")
+                  : t("apartments.found", { count: totalCount }, `Найдено: ${totalCount} вариантов`)}
               </p>
             </div>
 
@@ -216,10 +318,10 @@ export default function ApartmentsPage() {
                   <div className="flex justify-center mt-8">
                     <Loader2 className="h-8 w-8 animate-spin text-primary" />
                   </div>
-                ) : apartments.length < totalCount ? (
+                ) : apartments.length < totalCount || page < 3 ? (
                   <div className="flex justify-center mt-8">
                     <Button onClick={handleLoadMore} variant="outline">
-                      {t("apartments.loadMore")}
+                      {t("apartments.loadMore", "Загрузить еще")}
                     </Button>
                   </div>
                 ) : null}
@@ -227,10 +329,10 @@ export default function ApartmentsPage() {
                 {apartments.length === 0 && status !== "loading" && (
                   <div className="flex flex-col items-center justify-center py-12">
                     <p className="text-lg font-medium mb-2">
-                      {t("apartments.noResults")}
+                      {t("apartments.noResults", "Нет результатов")}
                     </p>
                     <p className="text-sm text-muted-foreground mb-4">
-                      {t("apartments.tryAdjusting")}
+                      {t("apartments.tryAdjusting", "Попробуйте изменить параметры поиска")}
                     </p>
                   </div>
                 )}
@@ -244,13 +346,13 @@ export default function ApartmentsPage() {
                   isLoading={status === "loading" && page === 1}
                   onPointsSelected={handleMapPointsSelected}
                   onMarkerClick={handleMarkerClick}
-                  className="rounded-lg border"
+                  className="rounded-lg border h-[70vh]"
                 />
 
                 {!isMobile && apartments.length > 0 && (
                   <div className="absolute top-4 right-4 w-80 max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-lg p-4 border">
                     <h3 className="text-sm font-medium mb-3">
-                      {t("apartments.found", { count: totalCount })}
+                      {t("apartments.found", { count: totalCount }, `Найдено: ${totalCount} вариантов`)}
                     </h3>
                     <div className="space-y-3">
                       {apartments.slice(0, 5).map((apartment) => (
@@ -266,7 +368,7 @@ export default function ApartmentsPage() {
                           className="w-full"
                           onClick={() => setView("list")}
                         >
-                          {t("apartments.viewAll", { count: totalCount - 5 })}
+                          {t("apartments.viewAll", { count: totalCount - 5 }, `Посмотреть все (${totalCount - 5})`)}
                         </Button>
                       )}
                     </div>

@@ -51,19 +51,19 @@ export const MobileNav: React.FC<MobileNavProps> = ({
         },
         {
           title: t("header.logout"),
-          href: "/auth/logout",
+          href: "/logout",
           icon: <LogIn className="mr-2 h-4 w-4" />,
         },
       ]
     : [
         {
           title: t("header.login"),
-          href: "/auth/login",
+          href: "/login",
           icon: <LogIn className="mr-2 h-4 w-4" />,
         },
         {
           title: t("header.register"),
-          href: "/auth/register",
+          href: "/register",
           icon: <User className="mr-2 h-4 w-4" />,
         },
       ];
