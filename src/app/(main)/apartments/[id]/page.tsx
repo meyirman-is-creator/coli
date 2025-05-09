@@ -1037,7 +1037,7 @@ export default function ApartmentDetailPage({ params }: { params: { id: string }
             <Textarea
               placeholder="Напишите ваше сообщение..."
               value={messageText}
-              onChange={(e) => setMessageText(e.target.value)}
+              onChange={(e: any) => setMessageText(e.target.value)}
               className="min-h-[120px]"
             />
           </div>
