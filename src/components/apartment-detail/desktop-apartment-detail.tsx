@@ -22,23 +22,24 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import ApartmentFeaturesList from "./ApartmentFeaturesList";
-import ApartmentInfoList from "./ApartmentInfoList";
-import ContactSection from "./ContactSection";
-import InterestGroupSection from "./InterestGroupSection";
-import ApartmentPhotoGallery from "./ApartmentPhotoGallery";
+import ApartmentFeaturesList from "./apartment-features-list";
+import ApartmentInfoList from "./apartment-info-list";
+import ContactSection from "./contact-section";
+import InterestGroupSection from "./interest-group-section";
+import ApartmentPhotoGallery from "./apartment-photo-gallery";
+import ApartmentLocationMap from "./apartment-location-map";
 
-export default function DesktopApartmentDetail({ apartment }) {
+export default function DesktopApartmentDetail({ apartment }: { apartment: any }) {
   const [activeTab, setActiveTab] = useState("description");
   const [isFavorite, setIsFavorite] = useState(false);
   
   // Format price
-  const formatPrice = (price) => {
+  const formatPrice = (price: number) => {
     return price.toLocaleString() + " ₸";
   };
   
   // Format date
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     if (!dateString) return "Не указано";
     return new Date(dateString).toLocaleDateString('ru-RU');
   };
@@ -82,7 +83,7 @@ export default function DesktopApartmentDetail({ apartment }) {
         </div>
         
         <div className="hidden lg:grid grid-cols-2 grid-rows-2 gap-4">
-          {apartment.photos.slice(1, 5).map((photo, index) => (
+          {apartment.photos.slice(1, 5).map((photo: any, index: number) => (
             <div key={index} className="relative h-[218px] rounded-lg overflow-hidden bg-gray-100">
               <Image
                 src={photo.url}
@@ -171,6 +172,20 @@ export default function DesktopApartmentDetail({ apartment }) {
               <ApartmentFeaturesList apartment={apartment} isDesktop={true} />
             </TabsContent>
           </Tabs>
+          <div className="space-y-4">
+            <div className="h-[400px] rounded-lg overflow-hidden border">
+              <ApartmentLocationMap apartment={apartment} />
+            </div>
+            <div className="flex items-center text-sm text-gray-500">
+              <MapPin className="h-4 w-4 mr-2" />
+              <span>
+                {apartment.regionText}
+                {apartment.districtText ? `, ${apartment.districtText}` : ''}
+                {apartment.microDistrictText ? `, ${apartment.microDistrictText}` : ''}
+                {apartment.address ? `, ${apartment.address}` : ''}
+              </span>
+            </div>
+          </div>
         </div>
         
         {/* Right Column - Contact & Apply */}

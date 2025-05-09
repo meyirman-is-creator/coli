@@ -9,23 +9,24 @@ import { Separator } from "@/components/ui/separator";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
-import ApartmentFeaturesList from "./ApartmentFeaturesList";
-import ApartmentInfoList from "./ApartmentInfoList";
-import ContactSection from "./ContactSection";
-import InterestGroupSection from "./InterestGroupSection";
-import ApartmentPhotoGallery from "./ApartmentPhotoGallery";
+import ApartmentFeaturesList from "./apartment-features-list";
+import ApartmentInfoList from "./apartment-info-list";
+import ContactSection from "./contact-section";
+import InterestGroupSection from "./interest-group-section";
+import ApartmentPhotoGallery from "./apartment-photo-gallery";
+import ApartmentLocationMap from "./apartment-location-map";
 
-export default function MobileApartmentDetail({ apartment }) {
+export default function MobileApartmentDetail({ apartment }: { apartment: any }) {
   const [activeTab, setActiveTab] = useState("description");
   const scrollContainerRef = useRef(null);
   
   // Format price
-  const formatPrice = (price) => {
+  const formatPrice = (price: number) => {
     return price.toLocaleString() + " ₸";
   };
   
   // Format date
-  const formatDate = (dateString) => {
+  const formatDate = (dateString: string) => {
     if (!dateString) return "Не указано";
     return new Date(dateString).toLocaleDateString('ru-RU');
   };
@@ -111,22 +112,36 @@ export default function MobileApartmentDetail({ apartment }) {
           </TabsContent>
           
           <TabsContent value="info" className="mt-0">
-            <ApartmentInfoList apartment={apartment} />
+            <ApartmentInfoList apartment={apartment} isDesktop={false} />
           </TabsContent>
           
           <TabsContent value="features" className="mt-0">
-            <ApartmentFeaturesList apartment={apartment} />
+            <ApartmentFeaturesList apartment={apartment} isDesktop={false} />
           </TabsContent>
         </Tabs>
+        <div className="space-y-4">
+          <div className="h-[240px] rounded-lg overflow-hidden border">
+            <ApartmentLocationMap apartment={apartment} zoom={13} />
+          </div>
+          <div className="flex items-center text-sm text-gray-500">
+            <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
+            <span className="text-xs">
+              {apartment.regionText}
+              {apartment.districtText ? `, ${apartment.districtText}` : ''}
+              {apartment.microDistrictText ? `, ${apartment.microDistrictText}` : ''}
+              {apartment.address ? `, ${apartment.address}` : ''}
+            </span>
+          </div>
+        </div>
         
         {/* Contact Section */}
         <div className="mb-8 bg-slate-50 rounded-lg p-4">
-          <ContactSection apartment={apartment} />
+          <ContactSection apartment={apartment} isDesktop={false} />
         </div>
         
         {/* Interested People Section */}
         <div className="mb-8">
-          <InterestGroupSection apartment={apartment} />
+          <InterestGroupSection apartment={apartment} isDesktop={false} />
         </div>
       </div>
     </div>

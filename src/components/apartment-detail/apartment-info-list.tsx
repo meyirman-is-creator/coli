@@ -3,7 +3,7 @@
 import React from "react";
 import { Separator } from "@/components/ui/separator";
 
-export default function ApartmentInfoList({ apartment, isDesktop = false }) {
+export default function ApartmentInfoList({ apartment, isDesktop = false }: { apartment: any, isDesktop: boolean }) {
   // Information entries with their labels and values
   const infoEntries = [
     { 

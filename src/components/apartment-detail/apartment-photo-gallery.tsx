@@ -5,14 +5,15 @@ import Image from "next/image";
 import { ChevronLeft, ChevronRight, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { DialogTitle } from "@radix-ui/react-dialog";
 
-export default function ApartmentPhotoGallery({ photos }) {
+export default function ApartmentPhotoGallery({ photos }: { photos: any[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [showFullGallery, setShowFullGallery] = useState(false);
   const [fullscreenIndex, setFullscreenIndex] = useState(0);
-  const scrollRef = useRef(null);
+  const scrollRef = useRef<HTMLDivElement>(null);
 
-  const photoUrls = photos?.map(photo => photo.url) || [];
+  const photoUrls = photos?.map((photo: any) => photo.url) || [];
   
   // Handle navigation
   const nextSlide = () => {
@@ -27,11 +28,11 @@ export default function ApartmentPhotoGallery({ photos }) {
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
   
-  const handleTouchStart = (e) => {
+  const handleTouchStart = (e: any) => {
     setTouchStart(e.targetTouches[0].clientX);
   };
   
-  const handleTouchMove = (e) => {
+  const handleTouchMove = (e: any) => {
     setTouchEnd(e.targetTouches[0].clientX);
   };
   
@@ -48,7 +49,7 @@ export default function ApartmentPhotoGallery({ photos }) {
   };
   
   // Open fullscreen gallery
-  const openFullGallery = (index) => {
+  const openFullGallery = (index: number) => {
     setFullscreenIndex(index);
     setShowFullGallery(true);
   };
@@ -85,7 +86,7 @@ export default function ApartmentPhotoGallery({ photos }) {
           ref={scrollRef}
           className="flex w-full h-full overflow-x-hidden snap-x snap-mandatory touch-pan-x"
         >
-          {photoUrls.map((url, index) => (
+          {photoUrls.map((url: string, index: number) => (
             <div 
               key={index}
               className="min-w-full h-full snap-center relative"
@@ -125,10 +126,10 @@ export default function ApartmentPhotoGallery({ photos }) {
         
         {/* Dots indicator */}
         <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-          {photoUrls.map((_, index) => (
+          {photoUrls.map((_, index: number) => (
             <button
               key={index}
-              onClick={(e) => {
+              onClick={(e: any) => {
                 e.stopPropagation();
                 setCurrentIndex(index);
               }}
@@ -148,6 +149,7 @@ export default function ApartmentPhotoGallery({ photos }) {
       {/* Fullscreen Gallery Dialog */}
       <Dialog open={showFullGallery} onOpenChange={setShowFullGallery}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] p-0 bg-black">
+            <DialogTitle></DialogTitle>
           <div className="relative w-full h-[90vh]">
             <Image
               src={photoUrls[fullscreenIndex]}

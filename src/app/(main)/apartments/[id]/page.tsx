@@ -5,15 +5,85 @@ import { useParams, useRouter } from "next/navigation";
 import { useMediaQuery } from "react-responsive";
 import MobileApartmentDetail from "@/components/apartment-detail/mobile-apartment-detail";
 import DesktopApartmentDetail from "@/components/apartment-detail/desktop-apartment-detail";
+import ApartmentSkeleton from "@/components/apartment-detail/apartment-skeleton";
+import ApartmentError from "@/components/apartment-detail/apartment-error";
+
+// Define the Apartment interface based on your data structure
+interface Apartment {
+  id: number;
+  role: string;
+  title: string;
+  selectedGender: string;
+  doYouLiveInThisHouse: boolean;
+  howManyPeopleLiveInThisApartment: string;
+  numberOfPeopleAreYouAccommodating: number;
+  minAge: number;
+  maxAge: number;
+  regionText: string;
+  districtText: string;
+  microDistrictText: string;
+  address: string;
+  arriveDate: string;
+  cost: number;
+  quantityOfRooms: string;
+  isDepositRequired: boolean;
+  deposit: number;
+  arePetsAllowed: boolean;
+  isCommunalServiceIncluded: boolean;
+  minAmountOfCommunalService: number;
+  maxAmountOfCommunalService: number;
+  intendedForStudents: boolean;
+  areBadHabitsAllowed: boolean;
+  apartmentsInfo: string;
+  typeOfHousing: string;
+  numberOfFloor: number;
+  maxFloorInTheBuilding: number;
+  areaOfTheApartment: number;
+  forALongTime: boolean;
+  preferences: string[];
+  coordsX: string;
+  coordsY: string;
+  photos: { id: number; url: string }[];
+  user: {
+    firstName: string;
+    lastName: string;
+    profilePhoto: string;
+  };
+  consideringOnlyNPeople: boolean;
+  ownersName: string;
+  ownersPhoneNumbers: string[];
+  residentsDataResponse: {
+    id: number;
+    name: string;
+    profilePhoto: string;
+    residentType: string;
+  }[];
+  groupDataResponse: {
+    id: number;
+    freeSlots: number;
+    group: string;
+    groupMembers: {
+      id: number;
+      name: string;
+      age: number;
+      phoneNumbers: string[];
+      appliedDate: string;
+      profilePhoto: string;
+      permissionStatus: string;
+      coverLetter: string | null;
+      me: boolean | null;
+    }[];
+  }[];
+}
 
 export default function ApartmentDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const apartmentId = Number(params.apartmentId);
+  const apartmentId = Number(params.id); // Changed from params.apartmentId to params.id to match the route pattern
   
-  const [apartment, setApartment] = useState(null);
+  const [apartment, setApartment] = useState<Apartment | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const isMobile = useMediaQuery({ maxWidth: 768 });
   
@@ -30,7 +100,7 @@ export default function ApartmentDetailPage() {
         await new Promise(resolve => setTimeout(resolve, 1000));
         
         // Mock data based on your API structure
-        const mockApartment = {
+        const mockApartment: Apartment = {
           id: apartmentId,
           role: "OWNER",
           title: "1-комнатная квартира · 44 м² · 3/21 этаж, мкр Тастак-2, Варламова 33",
@@ -150,10 +220,10 @@ export default function ApartmentDetailPage() {
           ]
         };
         
-        setApartment(mockApartment as any);
+        setApartment(mockApartment);
       } catch (err: any) {
         console.error('Error fetching apartment data:', err);
-        // setError("Не удалось загрузить данные объявления. Пожалуйста, попробуйте снова позже.");
+        setError("Не удалось загрузить данные объявления. Пожалуйста, попробуйте снова позже.");
       } finally {
         setLoading(false);
       }
@@ -164,15 +234,15 @@ export default function ApartmentDetailPage() {
     }
   }, [apartmentId]);
 
-  // // Loading state
-  // if (loading) {
-  //   return <ApartmentSkeleton />;
-  // }
+  // Loading state
+  if (loading) {
+    return <ApartmentSkeleton />;
+  }
 
-  // // Error state
-  // if (error || !apartment) {
-  //   return <ApartmentError error={error} onRetry={() => router.push('/apartments')} />;
-  // }
+  // Error state
+  if (error || !apartment) {
+    return <ApartmentError error={error} onRetry={() => router.push('/apartments')} />;
+  }
 
   // Render based on screen size
   return isMobile ? (

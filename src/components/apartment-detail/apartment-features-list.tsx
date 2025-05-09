@@ -4,7 +4,7 @@ import React from "react";
 import { CheckCircle2, Wifi, ParkingCircle, Cat, Wind, Warehouse, DollarSign, Coffee, Music, X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 
-export default function ApartmentFeaturesList({ apartment, isDesktop = false }) {
+export default function ApartmentFeaturesList({ apartment, isDesktop = false }: { apartment: any, isDesktop: boolean }) {
   const featureIcons = {
     "Без вредных привычек": <X className="h-4 w-4 text-red-500" />,
     "Тишина после 22:00": <Music className="h-4 w-4 text-blue-500" />,
@@ -19,7 +19,7 @@ export default function ApartmentFeaturesList({ apartment, isDesktop = false }) 
     "Кофемашина": <Coffee className="h-4 w-4 text-brown-500" />
   };
 
-  const getDefaultIcon = (feature) => {
+  const getDefaultIcon = (feature: any) => {
     return <CheckCircle2 className="h-4 w-4 text-green-500" />;
   };
 
@@ -34,7 +34,7 @@ export default function ApartmentFeaturesList({ apartment, isDesktop = false }) 
   return (
     <div className="space-y-4">
       <div className={isDesktop ? "grid grid-cols-2 md:grid-cols-3 gap-4" : ""}>
-        {apartment.preferences.map((feature, index) => (
+        {apartment.preferences.map((feature: any, index: number) => (
           <div 
             key={index}
             className={`flex items-center gap-2 ${
@@ -44,7 +44,7 @@ export default function ApartmentFeaturesList({ apartment, isDesktop = false }) 
             }`}
           >
             <div className={isDesktop ? "w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center" : ""}>
-              {featureIcons[feature] || getDefaultIcon(feature)}
+              {featureIcons[feature as keyof typeof featureIcons] || getDefaultIcon(feature)}
             </div>
             <span className={`${isDesktop ? "font-medium" : "text-gray-700 text-sm"}`}>
               {feature}

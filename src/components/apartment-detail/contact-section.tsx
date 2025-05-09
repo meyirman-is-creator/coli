@@ -15,9 +15,9 @@ import {
   TableRow,
 } from "@/components/ui/table";
 
-export default function ContactSection({ apartment, isDesktop = false }) {
+export default function ContactSection({ apartment, isDesktop = false }: { apartment: any, isDesktop: boolean }) {
   const [showPhoneNumbers, setShowPhoneNumbers] = useState(false);
-  const [selectedResident, setSelectedResident] = useState(null);
+  const [selectedResident, setSelectedResident] = useState<any>(null);
   
   // Extract phone numbers
   const phoneNumbers = Array.isArray(apartment.ownersPhoneNumbers) 
@@ -27,7 +27,7 @@ export default function ContactSection({ apartment, isDesktop = false }) {
   const primaryPhone = phoneNumbers.length > 0 ? phoneNumbers[0].replace(/\s/g, '') : '';
   
   // Format resident type
-  const formatResidentType = (type) => {
+  const formatResidentType = (type: any) => {
     switch (type) {
       case "OWNER":
         return "Хозяин";
@@ -39,7 +39,7 @@ export default function ContactSection({ apartment, isDesktop = false }) {
   };
   
   // Open WhatsApp
-  const handleWhatsAppClick = (e) => {
+  const handleWhatsAppClick = (e: any) => {
     e.preventDefault();
     if (primaryPhone) {
       window.open(`https://wa.me/${primaryPhone.replace(/[^0-9]/g, '')}`, '_blank');
@@ -47,7 +47,7 @@ export default function ContactSection({ apartment, isDesktop = false }) {
   };
   
   // Open resident profile
-  const openResidentProfile = (resident) => {
+  const openResidentProfile = (resident: any) => {
     setSelectedResident(resident);
   };
 
@@ -135,7 +135,7 @@ export default function ContactSection({ apartment, isDesktop = false }) {
                   </TableHeader>
                 )}
                 <TableBody>
-                  {apartment.residentsDataResponse.map((resident) => (
+                  {apartment.residentsDataResponse.map((resident: any) => (
                     <TableRow key={resident.id}>
                       <TableCell className="flex items-center gap-2 py-2">
                         <Avatar className="h-8 w-8">
