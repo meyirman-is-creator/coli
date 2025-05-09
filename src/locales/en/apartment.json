@@ -1,0 +1,172 @@
+{
+    "common": {
+      "yes": "Yes",
+      "no": "No",
+      "notSpecified": "Not specified"
+    },
+    "navigation": {
+      "backToListings": "Back to listings"
+    },
+    "actions": {
+      "share": "Share",
+      "inFavorites": "In favorites",
+      "addToFavorites": "Add to favorites",
+      "applyNow": "Apply now",
+      "contactOwner": "Contact owner",
+      "viewAll": "View all"
+    },
+    "tabs": {
+      "description": "Description",
+      "information": "Information",
+      "features": "Features"
+    },
+    "sections": {
+      "financialInfo": "Financial information",
+      "housingRules": "Housing rules",
+      "contacts": "Contacts",
+      "interestedGroups": "Interested groups"
+    },
+    "contacts": {
+      "connectWithResidents": "Contact the residents",
+      "listingOwner": "Listing owner",
+      "call": "Call",
+      "message": "Message",
+      "showPhoneNumber": "Show phone number",
+      "residents": "Residents",
+      "name": "Name",
+      "role": "Role",
+      "profile": "Profile",
+      "residentProfile": "Resident Profile",
+      "aboutMe": "About me",
+      "interests": "Interests",
+      "noInformation": "No information available",
+      "reading": "Reading",
+      "movies": "Movies",
+      "sports": "Sports",
+      "close": "Close",
+      "owner": "Owner",
+      "resident": "Resident"
+    },
+    "groups": {
+      "interestedInListing": "Interested in this listing",
+      "peopleCount": "{{count}} people",
+      "groupCount": "{{count}} groups",
+      "freeSlots": "Free slots: {{count}}",
+      "hide": "Hide",
+      "details": "Details",
+      "apply": "Apply",
+      "viewProfile": "Profile",
+      "defaultGroupName": "Group",
+      "you": "You",
+      "groupMember": "Group member",
+      "zeroGroups": "0 groups",
+      "noGroupsYet": "No groups yet. Create your own group!",
+      "createGroup": "Create group",
+      "createNewGroup": "Create a new group",
+      "createGroupDescription": "Create a group to find roommates for this housing",
+      "groupName": "Group name",
+      "groupNamePlaceholder": "Example: Medical students",
+      "cancel": "Cancel",
+      "create": "Create",
+      "createYourGroup": "Create your own group",
+      "applyToGroup": "Apply to group",
+      "applyToGroupDescription": "Group: {{name}}",
+      "coverLetter": "Cover letter",
+      "coverLetterPlaceholder": "Tell about yourself and why you want to join this group...",
+      "sendApplication": "Send application",
+      "userProfile": "User Profile",
+      "ageYears": "{{age}} years old",
+      "appliedDate": "Applied: {{date}}",
+      "aboutMe": "About me",
+      "interests": "Interests",
+      "noInformation": "No information available",
+      "reading": "Reading",
+      "music": "Music",
+      "sports": "Sports",
+      "close": "Close",
+      "enterGroupName": "Enter group name",
+      "groupCreated": "Group created",
+      "groupCreatedDescription": "Group \"{{name}}\" created successfully",
+      "writeCoverLetter": "Write a cover letter",
+      "applicationSent": "Application sent",
+      "applicationSentDescription": "Your application has been sent successfully"
+    },
+    "features": {
+      "rooms": "rooms",
+      "roomsShort": "rm",
+      "squareMeters": "sqm",
+      "squareMetersShort": "sqm",
+      "people": "people",
+      "peopleShort": "ppl",
+      "availableFrom": "Available from",
+      "notSpecified": "Features not specified",
+      "no_bad_habits": "No bad habits",
+      "quiet_after_22": "Quiet after 10 PM",
+      "cleaning_schedule": "Scheduled cleaning",
+      "internet_included": "Internet included",
+      "air_conditioner": "Air conditioner",
+      "pets_allowed": "Pets allowed",
+      "parking": "Parking",
+      "storage": "Storage room",
+      "utilities_included": "Utilities included",
+      "children_allowed": "Children allowed",
+      "coffee_machine": "Coffee machine"
+    },
+    "pricing": {
+      "month": "month",
+      "deposit": "Deposit",
+      "utilities": "Utilities",
+      "availableFrom": "Available from",
+      "leaseTerms": "Lease terms"
+    },
+    "propertyType": {
+      "apartment": "Apartment",
+      "house": "House",
+      "room": "Room",
+      "studio": "Studio"
+    },
+    "leaseType": {
+      "longTerm": "Long-term",
+      "shortTerm": "Short-term"
+    },
+    "gender": {
+      "any": "Any",
+      "male": "Male",
+      "female": "Female"
+    },
+    "rules": {
+      "smokingAllowed": "Smoking allowed",
+      "smokingProhibited": "Smoking prohibited",
+      "petsAllowed": "Pets allowed",
+      "petsProhibited": "Pets prohibited",
+      "suitableForStudents": "Suitable for students",
+      "notForStudents": "Not for students"
+    },
+    "info": {
+      "city": "City",
+      "propertyType": "Property type",
+      "rentalType": "Rental type",
+      "floor": "Floor",
+      "floorValue": "{{floor}} of {{total}}",
+      "area": "Area",
+      "squareMeters": "{{area}} sqm",
+      "condition": "Condition",
+      "withBadHabits": "With bad habits",
+      "noBadHabits": "No bad habits",
+      "residentsCount": "Current residents",
+      "lookingFor": "Looking for",
+      "gender": "Gender",
+      "forStudents": "For students"
+    },
+    "gallery": {
+      "photo": "Photo",
+      "morePhotos": "more photos",
+      "noPhotos": "No photos available"
+    },
+    "error": {
+      "loadingError": "Failed to load apartment details",
+      "defaultMessage": "Please try again later",
+      "goBack": "Go back",
+      "tryAgain": "Try again"
+    }
+  }

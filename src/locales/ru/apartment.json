@@ -1,0 +1,172 @@
+{
+    "common": {
+      "yes": "Да",
+      "no": "Нет",
+      "notSpecified": "Не указано"
+    },
+    "navigation": {
+      "backToListings": "Назад к объявлениям"
+    },
+    "actions": {
+      "share": "Поделиться",
+      "inFavorites": "В избранном",
+      "addToFavorites": "В избранное",
+      "applyNow": "Подать заявку",
+      "contactOwner": "Связаться с владельцем",
+      "viewAll": "Смотреть все"
+    },
+    "tabs": {
+      "description": "Описание",
+      "information": "Информация",
+      "features": "Качества"
+    },
+    "sections": {
+      "financialInfo": "Финансовая информация",
+      "housingRules": "Правила проживания",
+      "contacts": "Контакты",
+      "interestedGroups": "Заинтересованные группы"
+    },
+    "contacts": {
+      "connectWithResidents": "Связаться с сожителями",
+      "listingOwner": "Владелец объявления",
+      "call": "Позвонить",
+      "message": "Написать",
+      "showPhoneNumber": "Показать номер телефона",
+      "residents": "Проживающие",
+      "name": "Имя",
+      "role": "Роль",
+      "profile": "Анкета",
+      "residentProfile": "Анкета жителя",
+      "aboutMe": "О себе",
+      "interests": "Интересы",
+      "noInformation": "Информация отсутствует",
+      "reading": "Чтение",
+      "movies": "Кино",
+      "sports": "Спорт",
+      "close": "Закрыть",
+      "owner": "Хозяин",
+      "resident": "Житель"
+    },
+    "groups": {
+      "interestedInListing": "Заинтересованы в объявлении",
+      "peopleCount": "{{count}} человек",
+      "groupCount": "{{count}} групп",
+      "freeSlots": "Свободных мест: {{count}}",
+      "hide": "Скрыть",
+      "details": "Подробнее",
+      "apply": "Подать заявку",
+      "viewProfile": "Профиль",
+      "defaultGroupName": "Группа",
+      "you": "Вы",
+      "groupMember": "Участник группы",
+      "zeroGroups": "0 групп",
+      "noGroupsYet": "Пока нет групп. Создайте свою группу!",
+      "createGroup": "Создать группу",
+      "createNewGroup": "Создать новую группу",
+      "createGroupDescription": "Создайте группу для поиска соседей в это жилье",
+      "groupName": "Название группы",
+      "groupNamePlaceholder": "Например: Студенты-медики",
+      "cancel": "Отмена",
+      "create": "Создать",
+      "createYourGroup": "Создать свою группу",
+      "applyToGroup": "Подать заявку в группу",
+      "applyToGroupDescription": "Группа: {{name}}",
+      "coverLetter": "Сопроводительное письмо",
+      "coverLetterPlaceholder": "Расскажите о себе и почему хотите присоединиться к этой группе...",
+      "sendApplication": "Отправить заявку",
+      "userProfile": "Профиль пользователя",
+      "ageYears": "{{age}} лет",
+      "appliedDate": "Подал заявку: {{date}}",
+      "aboutMe": "О себе",
+      "interests": "Интересы",
+      "noInformation": "Информация отсутствует",
+      "reading": "Чтение",
+      "music": "Музыка",
+      "sports": "Спорт",
+      "close": "Закрыть",
+      "enterGroupName": "Введите название группы",
+      "groupCreated": "Группа создана",
+      "groupCreatedDescription": "Группа \"{{name}}\" успешно создана",
+      "writeCoverLetter": "Напишите сопроводительное письмо",
+      "applicationSent": "Заявка отправлена",
+      "applicationSentDescription": "Ваша заявка была успешно отправлена"
+    },
+    "features": {
+      "rooms": "комнат",
+      "roomsShort": "комн",
+      "squareMeters": "м²",
+      "squareMetersShort": "м²",
+      "people": "человек",
+      "peopleShort": "чел",
+      "availableFrom": "Доступно с",
+      "notSpecified": "Качества не указаны",
+      "без_вредных_привычек": "Без вредных привычек",
+      "тишина_после_22:00": "Тишина после 22:00",
+      "уборка_по_расписанию": "Уборка по расписанию",
+      "интернет_включен": "Интернет включен",
+      "кондиционер": "Кондиционер",
+      "можно_с_животными": "Можно с животными",
+      "парковка": "Парковка",
+      "кладовая": "Кладовая",
+      "коммунальные_включены": "Коммунальные включены",
+      "можно_с_детьми": "Можно с детьми",
+      "кофемашина": "Кофемашина"
+    },
+    "pricing": {
+      "month": "месяц",
+      "deposit": "Залог",
+      "utilities": "Коммунальные услуги",
+      "availableFrom": "Доступно с",
+      "leaseTerms": "Сроки аренды"
+    },
+    "propertyType": {
+      "apartment": "Квартира",
+      "house": "Дом",
+      "room": "Комната",
+      "studio": "Студия"
+    },
+    "leaseType": {
+      "longTerm": "Долгосрочно",
+      "shortTerm": "Краткосрочно"
+    },
+    "gender": {
+      "any": "Любой",
+      "male": "Мужской",
+      "female": "Женский"
+    },
+    "rules": {
+      "smokingAllowed": "Курение разрешено",
+      "smokingProhibited": "Курение запрещено",
+      "petsAllowed": "Животные разрешены",
+      "petsProhibited": "Животные запрещены",
+      "suitableForStudents": "Подходит для студентов",
+      "notForStudents": "Не для студентов"
+    },
+    "info": {
+      "city": "Город",
+      "propertyType": "Тип жилья",
+      "rentalType": "Сдача в аренду",
+      "floor": "Этаж",
+      "floorValue": "{{floor}} из {{total}}",
+      "area": "Площадь",
+      "squareMeters": "{{area}} м²",
+      "condition": "Состояние",
+      "withBadHabits": "С вредными привычками",
+      "noBadHabits": "Без вредных привычек",
+      "residentsCount": "Людей проживают",
+      "lookingFor": "Людей ищут",
+      "gender": "Гендер",
+      "forStudents": "Для студентов"
+    },
+    "gallery": {
+      "photo": "Фото",
+      "morePhotos": "фото еще",
+      "noPhotos": "Фотографии отсутствуют"
+    },
+    "error": {
+      "loadingError": "Не удалось загрузить детали объявления",
+      "defaultMessage": "Пожалуйста, попробуйте позже",
+      "goBack": "Назад",
+      "tryAgain": "Попробовать снова"
+    }
+  }

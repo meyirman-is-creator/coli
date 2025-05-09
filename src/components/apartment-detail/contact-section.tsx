@@ -14,10 +14,13 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { useClientTranslation } from "@/i18n/client";
 
 export default function ContactSection({ apartment, isDesktop = false }: { apartment: any, isDesktop: boolean }) {
   const [showPhoneNumbers, setShowPhoneNumbers] = useState(false);
   const [selectedResident, setSelectedResident] = useState<any>(null);
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale, "apartment");
   
   // Extract phone numbers
   const phoneNumbers = Array.isArray(apartment.ownersPhoneNumbers) 
@@ -30,9 +33,9 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
   const formatResidentType = (type: any) => {
     switch (type) {
       case "OWNER":
-        return "Хозяин";
+        return t("contacts.owner");
       case "RESIDENT":
-        return "Житель";
+        return t("contacts.resident");
       default:
         return type;
     }
@@ -54,8 +57,8 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
   return (
     <>
       <div className="space-y-4">
-        <h3 className="font-semibold text-gray-800 mb-2">
-          {isDesktop ? "Контактная информация" : "Связаться с сожителями"}
+        <h3 className="font-semibold text-foreground mb-2">
+          {isDesktop ? t("sections.contacts") : t("contacts.connectWithResidents")}
         </h3>
         
         <div className={`flex ${isDesktop ? "items-start gap-4" : "items-center justify-between"}`}>
@@ -65,14 +68,14 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
               <AvatarFallback>{apartment.user.firstName[0]}</AvatarFallback>
             </Avatar>
             <div>
-              <p className="font-medium text-gray-900">{apartment.user.firstName} {apartment.user.lastName}</p>
-              <p className="text-sm text-gray-500">Владелец объявления</p>
+              <p className="font-medium text-foreground">{apartment.user.firstName} {apartment.user.lastName}</p>
+              <p className="text-sm text-muted-foreground">{t("contacts.listingOwner")}</p>
             </div>
           </div>
           
           <div className={`flex gap-2 ${isDesktop ? "mt-2" : ""}`}>
             {showPhoneNumbers ? (
-              <div className="text-sm text-gray-700 font-medium">
+              <div className="text-sm text-foreground font-medium">
                 {primaryPhone}
               </div>
             ) : (
@@ -86,7 +89,7 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
                   >
                     <Link href={`tel:${primaryPhone}`}>
                       <Phone className="h-4 w-4" />
-                      <span className="hidden sm:inline">Позвонить</span>
+                      <span className="hidden sm:inline">{t("contacts.call")}</span>
                     </Link>
                   </Button>
                 )}
@@ -99,7 +102,7 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
                     className="gap-1"
                   >
                     <MessageSquare className="h-4 w-4" />
-                    <span className="hidden sm:inline">Написать</span>
+                    <span className="hidden sm:inline">{t("contacts.message")}</span>
                   </Button>
                 )}
               </>
@@ -112,24 +115,24 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
             variant="ghost"
             size="sm"
             onClick={() => setShowPhoneNumbers(true)}
-            className="text-sm text-blue-600 hover:text-blue-700 px-0 py-0 h-auto"
+            className="text-sm text-primary hover:text-primary/90 px-0 py-0 h-auto"
           >
-            Показать номер телефона
+            {t("contacts.showPhoneNumber")}
           </Button>
         )}
         
         {/* Residents Table */}
         {apartment.residentsDataResponse && apartment.residentsDataResponse.length > 0 && (
           <div className="mt-4">
-            <h4 className="font-medium text-gray-700 mb-2">Проживающие:</h4>
+            <h4 className="font-medium text-foreground mb-2">{t("contacts.residents")}:</h4>
             
-            <div className={isDesktop ? "border rounded-md" : ""}>
+            <div className={isDesktop ? "border border-border rounded-md" : ""}>
               <Table>
                 {isDesktop && (
                   <TableHeader>
                     <TableRow>
-                      <TableHead>Имя</TableHead>
-                      <TableHead>Роль</TableHead>
+                      <TableHead>{t("contacts.name")}</TableHead>
+                      <TableHead>{t("contacts.role")}</TableHead>
                       <TableHead></TableHead>
                     </TableRow>
                   </TableHeader>
@@ -142,9 +145,9 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
                           <AvatarImage src={resident.profilePhoto} alt={resident.name} />
                           <AvatarFallback>{resident.name[0]}</AvatarFallback>
                         </Avatar>
-                        <span>{resident.name}</span>
+                        <span className="text-foreground">{resident.name}</span>
                       </TableCell>
-                      <TableCell className="text-gray-500 text-sm py-2">
+                      <TableCell className="text-muted-foreground text-sm py-2">
                         {formatResidentType(resident.residentType)}
                       </TableCell>
                       <TableCell className="text-right py-2">
@@ -152,9 +155,9 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
                           variant="ghost"
                           size="sm"
                           onClick={() => openResidentProfile(resident)}
-                          className="text-blue-600 hover:text-blue-700"
+                          className="text-primary hover:text-primary/90"
                         >
-                          Анкета
+                          {t("contacts.profile")}
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -171,7 +174,7 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
         <Dialog open={!!selectedResident} onOpenChange={() => setSelectedResident(null)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Анкета жителя</DialogTitle>
+              <DialogTitle>{t("contacts.residentProfile")}</DialogTitle>
             </DialogHeader>
             
             <div className="flex flex-col items-center py-4">
@@ -180,31 +183,31 @@ export default function ContactSection({ apartment, isDesktop = false }: { apart
                 <AvatarFallback>{selectedResident.name[0]}</AvatarFallback>
               </Avatar>
               
-              <h3 className="text-xl font-semibold">{selectedResident.name}</h3>
-              <p className="text-gray-500">{formatResidentType(selectedResident.residentType)}</p>
+              <h3 className="text-xl font-semibold text-foreground">{selectedResident.name}</h3>
+              <p className="text-muted-foreground">{formatResidentType(selectedResident.residentType)}</p>
             </div>
             
             <div className="space-y-4 mt-2">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">О себе:</h4>
-                <p className="text-gray-600 text-sm">
-                  Информация отсутствует
+              <div className="bg-accent/10 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-foreground">{t("contacts.aboutMe")}:</h4>
+                <p className="text-muted-foreground text-sm">
+                  {t("contacts.noInformation")}
                 </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Интересы:</h4>
+              <div className="bg-accent/10 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-foreground">{t("contacts.interests")}:</h4>
                 <div className="flex flex-wrap gap-2">
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Чтение</span>
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Кино</span>
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Спорт</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("contacts.reading")}</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("contacts.movies")}</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("contacts.sports")}</span>
                 </div>
               </div>
             </div>
             
             <div className="mt-4 flex justify-end">
               <Button variant="outline" onClick={() => setSelectedResident(null)}>
-                Закрыть
+                {t("contacts.close")}
               </Button>
             </div>
           </DialogContent>

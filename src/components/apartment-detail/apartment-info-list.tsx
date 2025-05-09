@@ -1,52 +1,64 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { useClientTranslation } from "@/i18n/client";
 
 export default function ApartmentInfoList({ apartment, isDesktop = false }: { apartment: any, isDesktop: boolean }) {
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale, "apartment");
+  
+  // Helper function to translate gender
+  const translateGender = (gender: string) => {
+    switch (gender) {
+      case "ANY": return t("gender.any");
+      case "MALE": return t("gender.male");
+      case "FEMALE": return t("gender.female");
+      default: return gender;
+    }
+  };
+  
   // Information entries with their labels and values
   const infoEntries = [
     { 
-      label: "Город",
+      label: t("info.city"),
       value: `${apartment.regionText}${apartment.districtText ? `, ${apartment.districtText}` : ''}` 
     },
     { 
-      label: "Тип жилья", 
-      value: apartment.typeOfHousing === "APARTMENT" ? "Квартира" : "Дом" 
+      label: t("info.propertyType"), 
+      value: apartment.typeOfHousing === "APARTMENT" ? t("propertyType.apartment") : t("propertyType.house") 
     },
     { 
-      label: "Сдача в аренду", 
-      value: apartment.forALongTime ? "Долгосрочно" : "Краткосрочно" 
+      label: t("info.rentalType"), 
+      value: apartment.forALongTime ? t("leaseType.longTerm") : t("leaseType.shortTerm") 
     },
     { 
-      label: "Этаж", 
-      value: `${apartment.numberOfFloor} из ${apartment.maxFloorInTheBuilding}` 
+      label: t("info.floor"), 
+      value: t("info.floorValue", { floor: apartment.numberOfFloor, total: apartment.maxFloorInTheBuilding }) 
     },
     { 
-      label: "Площадь", 
-      value: `${apartment.areaOfTheApartment} м²` 
+      label: t("info.area"), 
+      value: t("info.squareMeters", { area: apartment.areaOfTheApartment }) 
     },
     { 
-      label: "Состояние", 
-      value: apartment.areBadHabitsAllowed ? "С вредными привычками" : "Без вредных привычек" 
+      label: t("info.condition"), 
+      value: apartment.areBadHabitsAllowed ? t("info.withBadHabits") : t("info.noBadHabits") 
     },
     { 
-      label: "Людей проживают", 
+      label: t("info.residentsCount"), 
       value: apartment.howManyPeopleLiveInThisApartment 
     },
     { 
-      label: "Людей ищут", 
+      label: t("info.lookingFor"), 
       value: apartment.numberOfPeopleAreYouAccommodating 
     },
     { 
-      label: "Гендер", 
-      value: apartment.selectedGender === "ANY" ? "Любой" : 
-             apartment.selectedGender === "MALE" ? "Мужской" : 
-             apartment.selectedGender === "FEMALE" ? "Женский" : apartment.selectedGender
+      label: t("info.gender"), 
+      value: translateGender(apartment.selectedGender)
     },
     { 
-      label: "Для студентов", 
-      value: apartment.intendedForStudents ? "Да" : "Нет" 
+      label: t("info.forStudents"), 
+      value: apartment.intendedForStudents ? t("common.yes") : t("common.no") 
     }
   ];
 
@@ -55,8 +67,8 @@ export default function ApartmentInfoList({ apartment, isDesktop = false }: { ap
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4">
         {infoEntries.map((entry, index) => (
           <div key={index} className="flex flex-col">
-            <span className="text-gray-500 text-sm mb-1">{entry.label}:</span>
-            <span className="font-medium text-gray-900">{entry.value}</span>
+            <span className="text-muted-foreground text-sm mb-1">{entry.label}:</span>
+            <span className="font-medium text-foreground">{entry.value}</span>
           </div>
         ))}
       </div>
@@ -65,11 +77,11 @@ export default function ApartmentInfoList({ apartment, isDesktop = false }: { ap
 
   // Mobile version
   return (
-    <div className="space-y-0 divide-y divide-gray-100">
+    <div className="space-y-0 divide-y divide-border">
       {infoEntries.map((entry, index) => (
         <div key={index} className="flex justify-between py-3">
-          <span className="text-gray-600 text-sm">{entry.label}:</span>
-          <span className="font-medium text-gray-900 text-right">{entry.value}</span>
+          <span className="text-muted-foreground text-sm">{entry.label}:</span>
+          <span className="font-medium text-foreground text-right">{entry.value}</span>
         </div>
       ))}
     </div>

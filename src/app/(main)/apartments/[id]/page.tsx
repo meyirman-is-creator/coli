@@ -224,7 +224,8 @@ export default function ApartmentDetailPage() {
       } catch (err: any) {
         console.error('Error fetching apartment data:', err);
         setError("Не удалось загрузить данные объявления. Пожалуйста, попробуйте снова позже.");
-      } finally {
+      } 
+      finally {
         setLoading(false);
       }
     };
@@ -241,7 +242,7 @@ export default function ApartmentDetailPage() {
 
   // Error state
   if (error || !apartment) {
-    return <ApartmentError error={error} onRetry={() => router.push('/apartments')} />;
+    return <ApartmentError error={error} onRetry={() => router.push('/')} />;
   }
 
   // Render based on screen size

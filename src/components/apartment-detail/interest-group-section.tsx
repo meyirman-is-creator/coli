@@ -1,11 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, ChevronUp, Plus, Users, UserCircle } from "lucide-react";
+import { ChevronDown, ChevronUp, Plus, Users } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { AvatarGroup } from "@/components/ui/avatar-group";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogFooter, DialogDescription } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { toast } from "sonner";
+import { useClientTranslation } from "@/i18n/client";
 
 interface Person {
   id: number;
@@ -63,6 +64,8 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
   const [selectedGroup, setSelectedGroup] = useState<Group | null>(null);
   const [groupName, setGroupName] = useState("");
   const [coverLetter, setCoverLetter] = useState("");
+  const [locale, setLocale] = useState<"en" | "ru">("ru");
+  const { t } = useClientTranslation(locale, "apartment");
   
   // Parse groups data
   const groupData: GroupData = {
@@ -73,13 +76,13 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
     interestedGroupCount: apartment.groupDataResponse?.length || 0,
     groups: apartment.groupDataResponse?.map((group) => ({
       id: group.id || 0,
-      name: group.group || "Группа", 
+      name: group.group || t("groups.defaultGroupName"), 
       freeSlots: group.freeSlots,
       people: group.groupMembers.map((member) => ({
         id: member.id,
         firstName: member.name.split(' ')[0] || "",
         lastName: member.name.split(' ')[1] || "",
-        role: member.me ? "Вы" : "Участник группы",
+        role: member.me ? t("groups.you") : t("groups.groupMember"),
         avatar: member.profilePhoto,
         age: member.age || null,
         appliedDate: member.appliedDate,
@@ -107,13 +110,13 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
   
   const handleCreateGroup = () => {
     if (!groupName.trim()) {
-      toast.error("Введите название группы");
+      toast.error(t("groups.enterGroupName"));
       return;
     }
     
     // In a real app, this would be an API call
-    toast.success("Группа создана", {
-      description: `Группа "${groupName}" успешно создана`
+    toast.success(t("groups.groupCreated"), {
+      description: t("groups.groupCreatedDescription", { name: groupName })
     });
     
     setCreateGroupDialogOpen(false);
@@ -122,13 +125,13 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
   
   const handleSubmitApplication = () => {
     if (!coverLetter.trim()) {
-      toast.error("Напишите сопроводительное письмо");
+      toast.error(t("groups.writeCoverLetter"));
       return;
     }
     
     // In a real app, this would be an API call
-    toast.success("Заявка отправлена", {
-      description: "Ваша заявка была успешно отправлена"
+    toast.success(t("groups.applicationSent"), {
+      description: t("groups.applicationSentDescription")
     });
     
     setApplyDialogOpen(false);
@@ -139,41 +142,41 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
     return (
       <div className="space-y-4">
         <div className="flex justify-between items-center mb-2">
-          <h3 className="font-semibold text-gray-800">
-            Заинтересованы в объявлении
+          <h3 className="font-semibold text-foreground">
+            {t("groups.interestedInListing")}
           </h3>
-          <Badge variant="outline" className="bg-gray-50">
-            0 групп
+          <Badge variant="outline" className="bg-accent/10">
+            {t("groups.zeroGroups")}
           </Badge>
         </div>
         
-        <div className="bg-gray-50 p-4 rounded-lg text-center">
-          <p className="text-gray-500 mb-4">Пока нет групп. Создайте свою группу!</p>
+        <div className="bg-accent/10 p-4 rounded-lg text-center">
+          <p className="text-muted-foreground mb-4">{t("groups.noGroupsYet")}</p>
           
           <Button 
             onClick={() => setCreateGroupDialogOpen(true)}
-            className="bg-gray-900 hover:bg-gray-800 text-white"
+            className="bg-foreground hover:bg-foreground/90 text-background"
           >
             <Plus className="h-4 w-4 mr-2" />
-            Создать группу
+            {t("groups.createGroup")}
           </Button>
         </div>
         
         <Dialog open={createGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Создать новую группу</DialogTitle>
+              <DialogTitle>{t("groups.createNewGroup")}</DialogTitle>
               <DialogDescription>
-                Создайте группу для поиска соседей в это жилье
+                {t("groups.createGroupDescription")}
               </DialogDescription>
             </DialogHeader>
             
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="groupName">Название группы</Label>
+                <Label htmlFor="groupName">{t("groups.groupName")}</Label>
                 <Input 
                   id="groupName" 
-                  placeholder="Например: Студенты-медики" 
+                  placeholder={t("groups.groupNamePlaceholder")}
                   value={groupName}
                   onChange={(e) => setGroupName(e.target.value)}
                 />
@@ -182,10 +185,10 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
             
             <DialogFooter>
               <Button variant="outline" onClick={() => setCreateGroupDialogOpen(false)}>
-                Отмена
+                {t("groups.cancel")}
               </Button>
               <Button onClick={handleCreateGroup}>
-                Создать группу
+                {t("groups.create")}
               </Button>
             </DialogFooter>
           </DialogContent>
@@ -198,46 +201,43 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
     <div className="space-y-4">
       <div className="flex justify-between items-center mb-2">
         <div>
-          <h3 className="font-semibold text-gray-800">
-            Заинтересованы в объявлении
+          <h3 className="font-semibold text-foreground">
+            {t("groups.interestedInListing")}
           </h3>
-          <p className="text-sm text-gray-500">
-            {groupData.interestedPeopleCount} человек
+          <p className="text-sm text-muted-foreground">
+            {t("groups.peopleCount", { count: groupData.interestedPeopleCount })}
           </p>
         </div>
-        <Badge variant="outline" className="bg-gray-50">
-          {groupData.interestedGroupCount} {
-            groupData.interestedGroupCount === 1 ? "группа" : 
-            groupData.interestedGroupCount < 5 ? "группы" : "групп"
-          }
+        <Badge variant="outline" className="bg-accent/10">
+          {t("groups.groupCount", { count: groupData.interestedGroupCount })}
         </Badge>
       </div>
       
       <div className="space-y-4">
         {groupData.groups.map((group: any) => (
           <Card key={group.id} className={`border ${
-            isDesktop ? "hover:border-gray-300 transition-all" : ""
+            isDesktop ? "hover:border-border/80 transition-all" : ""
           }`}>
             <CardHeader className="p-4 pb-0">
               <div className="flex justify-between items-start">
                 <div className="space-y-1">
-                  <CardTitle className="text-base font-semibold">{group.name}</CardTitle>
+                  <CardTitle className="text-base font-semibold text-foreground">{group.name}</CardTitle>
                   <CardDescription>
-                    Свободных мест: {group.freeSlots}
+                    {t("groups.freeSlots", { count: group.freeSlots })}
                   </CardDescription>
                 </div>
                 
                 {group.people.length > 0 && (
                   <AvatarGroup>
                     {group.people.slice(0, 3).map((person: any) => (
-                      <Avatar key={person.id} className="h-8 w-8 border-2 border-white">
+                      <Avatar key={person.id} className="h-8 w-8 border-2 border-background">
                         <AvatarImage src={person.avatar} alt={`${person.firstName} ${person.lastName}`} />
                         <AvatarFallback>{person.firstName[0]}</AvatarFallback>
                       </Avatar>
                     ))}
                     {group.people.length > 3 && (
                       <div className="relative flex h-8 w-8 shrink-0 overflow-hidden rounded-full">
-                        <div className="flex h-full w-full items-center justify-center rounded-full bg-gray-100 border-2 border-white text-xs font-medium">
+                        <div className="flex h-full w-full items-center justify-center rounded-full bg-muted border-2 border-background text-xs font-medium">
                           +{group.people.length - 3}
                         </div>
                       </div>
@@ -253,17 +253,17 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
                   variant="ghost"
                   size="sm"
                   onClick={() => toggleExpandGroup(group.id)}
-                  className="flex items-center text-gray-600 hover:text-gray-900"
+                  className="flex items-center text-muted-foreground hover:text-foreground"
                 >
                   {expandedGroups.includes(group.id) ? (
                     <>
                       <ChevronUp className="h-4 w-4 mr-1" />
-                      Скрыть
+                      {t("groups.hide")}
                     </>
                   ) : (
                     <>
                       <ChevronDown className="h-4 w-4 mr-1" />
-                      Подробнее
+                      {t("groups.details")}
                     </>
                   )}
                 </Button>
@@ -274,7 +274,7 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
                   disabled={group.freeSlots <= 0}
                   onClick={() => handleApplyToGroup(group)}
                 >
-                  Подать заявку
+                  {t("groups.apply")}
                 </Button>
               </div>
               
@@ -289,8 +289,8 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
                           <AvatarFallback>{person.firstName[0]}</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="font-medium text-sm">{person.firstName} {person.lastName}</p>
-                          <p className="text-xs text-gray-500">{person.role}</p>
+                          <p className="font-medium text-sm text-foreground">{person.firstName} {person.lastName}</p>
+                          <p className="text-xs text-muted-foreground">{person.role}</p>
                         </div>
                       </div>
                       
@@ -298,9 +298,9 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
                         variant="ghost"
                         size="sm"
                         onClick={() => handleOpenProfile(person)}
-                        className="text-blue-600 hover:text-blue-700"
+                        className="text-primary hover:text-primary/90"
                       >
-                        Профиль
+                        {t("groups.viewProfile")}
                       </Button>
                     </div>
                   ))}
@@ -316,7 +316,7 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
           className="w-full flex items-center justify-center"
         >
           <Plus className="mr-2 h-4 w-4" />
-          Создать свою группу
+          {t("groups.createYourGroup")}
         </Button>
       </div>
       
@@ -324,18 +324,18 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
       <Dialog open={createGroupDialogOpen} onOpenChange={setCreateGroupDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Создать новую группу</DialogTitle>
+            <DialogTitle>{t("groups.createNewGroup")}</DialogTitle>
             <DialogDescription>
-              Создайте группу для поиска соседей в это жилье
+              {t("groups.createGroupDescription")}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="groupName">Название группы</Label>
+              <Label htmlFor="groupName">{t("groups.groupName")}</Label>
               <Input 
                 id="groupName" 
-                placeholder="Например: Студенты-медики" 
+                placeholder={t("groups.groupNamePlaceholder")}
                 value={groupName}
                 onChange={(e) => setGroupName(e.target.value)}
               />
@@ -344,10 +344,10 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setCreateGroupDialogOpen(false)}>
-              Отмена
+              {t("groups.cancel")}
             </Button>
             <Button onClick={handleCreateGroup}>
-              Создать группу
+              {t("groups.create")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -357,18 +357,18 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
       <Dialog open={applyDialogOpen} onOpenChange={setApplyDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Подать заявку в группу</DialogTitle>
+            <DialogTitle>{t("groups.applyToGroup")}</DialogTitle>
             <DialogDescription>
-              {selectedGroup && `Группа: ${selectedGroup.name}`}
+              {selectedGroup && t("groups.applyToGroupDescription", { name: selectedGroup.name })}
             </DialogDescription>
           </DialogHeader>
           
           <div className="space-y-4 py-4">
             <div className="space-y-2">
-              <Label htmlFor="coverLetter">Сопроводительное письмо</Label>
+              <Label htmlFor="coverLetter">{t("groups.coverLetter")}</Label>
               <Textarea 
                 id="coverLetter" 
-                placeholder="Расскажите о себе и почему хотите присоединиться к этой группе..." 
+                placeholder={t("groups.coverLetterPlaceholder")}
                 value={coverLetter}
                 onChange={(e) => setCoverLetter(e.target.value)}
                 rows={5}
@@ -378,10 +378,10 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
           
           <DialogFooter>
             <Button variant="outline" onClick={() => setApplyDialogOpen(false)}>
-              Отмена
+              {t("groups.cancel")}
             </Button>
             <Button onClick={handleSubmitApplication}>
-              Отправить заявку
+              {t("groups.sendApplication")}
             </Button>
           </DialogFooter>
         </DialogContent>
@@ -392,7 +392,7 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
         <Dialog open={!!selectedPerson} onOpenChange={() => setSelectedPerson(null)}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Профиль пользователя</DialogTitle>
+              <DialogTitle>{t("groups.userProfile")}</DialogTitle>
             </DialogHeader>
             
             <div className="flex flex-col items-center py-4">
@@ -401,38 +401,38 @@ export default function InterestGroupSection({ apartment, isDesktop = false }: {
                 <AvatarFallback>{selectedPerson.firstName[0]}</AvatarFallback>
               </Avatar>
               
-              <h3 className="text-xl font-semibold">{selectedPerson.firstName} {selectedPerson.lastName}</h3>
-              {selectedPerson.age && <p className="text-sm text-gray-500">{selectedPerson.age} лет</p>}
-              <p className="text-gray-500">{selectedPerson.role}</p>
+              <h3 className="text-xl font-semibold text-foreground">{selectedPerson.firstName} {selectedPerson.lastName}</h3>
+              {selectedPerson.age && <p className="text-sm text-muted-foreground">{t("groups.ageYears", { age: selectedPerson.age })}</p>}
+              <p className="text-muted-foreground">{selectedPerson.role}</p>
               
               {selectedPerson.appliedDate && (
-                <p className="text-xs text-gray-400 mt-1">
-                  Подал заявку: {new Date(selectedPerson.appliedDate).toLocaleDateString()}
+                <p className="text-xs text-muted-foreground mt-1">
+                  {t("groups.appliedDate", { date: new Date(selectedPerson.appliedDate).toLocaleDateString() })}
                 </p>
               )}
             </div>
             
             <div className="space-y-4 mt-2">
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">О себе:</h4>
-                <p className="text-gray-600 text-sm">
-                  Информация отсутствует
+              <div className="bg-accent/10 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-foreground">{t("groups.aboutMe")}:</h4>
+                <p className="text-muted-foreground text-sm">
+                  {t("groups.noInformation")}
                 </p>
               </div>
               
-              <div className="bg-gray-50 p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Интересы:</h4>
+              <div className="bg-accent/10 p-4 rounded-lg">
+                <h4 className="font-medium mb-2 text-foreground">{t("groups.interests")}:</h4>
                 <div className="flex flex-wrap gap-2">
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Чтение</span>
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Музыка</span>
-                  <span className="bg-gray-200 px-2 py-1 rounded-md text-xs">Спорт</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("groups.reading")}</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("groups.music")}</span>
+                  <span className="bg-muted px-2 py-1 rounded-md text-xs text-foreground">{t("groups.sports")}</span>
                 </div>
               </div>
             </div>
             
             <DialogFooter>
               <Button variant="outline" onClick={() => setSelectedPerson(null)}>
-                Закрыть
+                {t("groups.close")}
               </Button>
             </DialogFooter>
           </DialogContent>

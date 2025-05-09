@@ -3,6 +3,7 @@
 import React from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
 
 export default function ApartmentSkeleton() {
   return (
@@ -43,7 +44,7 @@ export default function ApartmentSkeleton() {
           </div>
           
           <div className="mb-8">
-            <div className="border-b pb-0 mb-6 flex gap-4">
+            <div className="border-b border-border pb-0 mb-6 flex gap-4">
               <Skeleton className="h-10 w-24" />
               <Skeleton className="h-10 w-24" />
               <Skeleton className="h-10 w-24" />
@@ -62,13 +63,13 @@ export default function ApartmentSkeleton() {
         {/* Right Column - Contact & Apply */}
         <div>
           {/* Price Card */}
-          <Card className="bg-white rounded-xl p-6 mb-6">
+          <Card className="bg-card rounded-xl p-6 mb-6 shadow-sm border border-border">
             <div className="flex justify-between items-center mb-4">
               <Skeleton className="h-8 w-32" />
               <Skeleton className="h-8 w-24" />
             </div>
             
-            <div className="h-[1px] w-full bg-gray-200 my-4" />
+            <Separator className="my-4" />
             
             <div className="space-y-3">
               <div className="flex justify-between">
@@ -94,7 +95,7 @@ export default function ApartmentSkeleton() {
           </Card>
           
           {/* Contact Skeleton */}
-          <Card className="bg-white rounded-xl p-6 mb-6">
+          <Card className="bg-card rounded-xl p-6 mb-6 shadow-sm border border-border">
             <Skeleton className="h-6 w-48 mb-4" />
             
             <div className="flex items-center justify-between mb-4">
@@ -112,7 +113,7 @@ export default function ApartmentSkeleton() {
               </div>
             </div>
             
-            <Skeleton className="h-[1px] w-full bg-gray-200 my-4" />
+            <Separator className="my-4" />
             
             <Skeleton className="h-6 w-32 mb-3" />
             <div className="space-y-4">
@@ -135,11 +136,11 @@ export default function ApartmentSkeleton() {
           </Card>
           
           {/* Interest Groups Skeleton */}
-          <Card className="bg-white rounded-xl p-6">
+          <Card className="bg-card rounded-xl p-6 shadow-sm border border-border">
             <Skeleton className="h-6 w-48 mb-4" />
             
             <div className="space-y-4">
-              <Card className="border">
+              <Card className="border border-border bg-background">
                 <div className="p-4">
                   <div className="flex justify-between items-start">
                     <div className="space-y-1">
@@ -154,7 +155,7 @@ export default function ApartmentSkeleton() {
                   </div>
                 </div>
                 
-                <div className="p-4 border-t">
+                <div className="p-4 border-t border-border">
                   <div className="flex justify-between w-full">
                     <Skeleton className="h-8 w-24" />
                     <Skeleton className="h-8 w-32" />
