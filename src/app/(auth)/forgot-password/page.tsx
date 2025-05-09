@@ -40,6 +40,13 @@ export default function ForgotPasswordPage() {
       return;
     }
     
+    // Basic email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      toast.error(t("auth.wrongFormat") || "Invalid email format");
+      return;
+    }
+    
     try {
       // Dispatch forgot password action
       const resultAction = await dispatch(forgotPassword({ email }));
@@ -47,8 +54,11 @@ export default function ForgotPasswordPage() {
       // Check if request was successful
       if (forgotPassword.fulfilled.match(resultAction)) {
         setIsSubmitted(true);
-        // Navigate to verification page
-        router.push(`/reset-password/verify?email=${encodeURIComponent(email)}`);
+        // In a real app without redirection (showing success message)
+        // Or navigate to verification page if you want immediate redirection:
+        if (!isSubmitted) {
+          router.push(`/reset-password?email=${encodeURIComponent(email)}`);
+        }
       }
     } catch (err) {
       console.error("Password reset request failed:", err);

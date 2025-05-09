@@ -44,6 +44,12 @@ export default function VerifyResetCodePage() {
       return;
     }
     
+    // Validate code format (should be 6 digits)
+    if (!/^\d{6}$/.test(code)) {
+      toast.error(t("auth.wrongFormat") || "Code should be 6 digits");
+      return;
+    }
+    
     try {
       // Dispatch verify code action
       const resultAction = await dispatch(verifyResetCode({ 

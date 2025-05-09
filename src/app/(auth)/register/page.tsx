@@ -46,13 +46,26 @@ export default function RegisterPage() {
     e.preventDefault();
     setValidationError(null);
     
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+      setValidationError(t("auth.wrongFormat") || "Invalid email format");
+      return;
+    }
+    
+    // Password validation
+    if (password.length < 8) {
+      setValidationError(t("auth.passwordTooShort") || "Password must be at least 8 characters");
+      return;
+    }
+    
     if (password !== confirmPassword) {
-      setValidationError(t("auth.passwordMismatch"));
+      setValidationError(t("auth.passwordMismatch") || "Passwords do not match");
       return;
     }
     
     if (!agreeTerms) {
-      setValidationError(t("auth.termsRequired"));
+      setValidationError(t("auth.termsRequired") || "You must agree to the terms");
       return;
     }
     

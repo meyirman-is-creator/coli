@@ -10,11 +10,11 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useClientTranslation } from "@/i18n/client";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
-import { verifyEmail } from "@/store/slices/authSlice";
-import { Mail, CheckCircle } from "lucide-react";
+import { resetPassword } from "@/store/slices/authSlice";
+import { ArrowLeft, Eye, EyeOff, Lock, CheckCircle } from "lucide-react";
 import { toast } from "sonner";
 
-export default function VerifyEmailPage() {
+export default function ResetPasswordNewPage() {
   const [locale, setLocale] = useState<"en" | "ru">("ru");
   const { t } = useClientTranslation(locale, "auth");
   const router = useRouter();
@@ -27,7 +27,10 @@ export default function VerifyEmailPage() {
   const emailFromParams = searchParams.get("email");
   
   const [email, setEmail] = useState(emailFromParams || "");
-  const [code, setCode] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   
   // If user is already authenticated, redirect to home
@@ -40,47 +43,36 @@ export default function VerifyEmailPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    // Validate
-    if (!email || !code) {
-      toast.error(t("auth.allFieldsRequired") || "All fields are required");
-      return;
-    }
-    
-    // Validate code format (should be 6 digits)
-    if (!/^\d{6}$/.test(code)) {
-      toast.error(t("auth.wrongFormat") || "Code should be 6 digits");
-      return;
-    }
-    
-    try {
-      // Dispatch verify email action
-      const resultAction = await dispatch(verifyEmail({ 
-        email, 
-        code 
-      }));
-      
-      // Check if verification was successful
-      if (verifyEmail.fulfilled.match(resultAction)) {
-        setIsSubmitted(true);
-        toast.success(t("auth.emailVerified") || "Email verified successfully");
-      }
-    } catch (err) {
-      console.error("Verification failed:", err);
-    }
-  };
-  
-  const handleResendCode = async () => {
     if (!email) {
       toast.error(t("auth.emailRequired") || "Email is required");
       return;
     }
     
+    if (password !== confirmPassword) {
+      toast.error(t("auth.passwordMismatch") || "Passwords do not match");
+      return;
+    }
+    
+    if (password.length < 8) {
+      toast.error(t("auth.passwordTooShort") || "Password must be at least 8 characters");
+      return;
+    }
+    
     try {
-      // In a real app, you'd dispatch an action to resend code
-      // For demo purposes, we'll just show a success toast
-      toast.success(t("auth.codeSent") || "Verification code sent");
+      // Dispatch reset password action
+      const resultAction = await dispatch(resetPassword({ 
+        email, 
+        password,
+        confirmPassword
+      }));
+      
+      // Check if reset was successful
+      if (resetPassword.fulfilled.match(resultAction)) {
+        setIsSubmitted(true);
+        toast.success(t("auth.passwordReset") || "Password reset successfully");
+      }
     } catch (err) {
-      console.error("Failed to resend code:", err);
+      console.error("Password reset failed:", err);
     }
   };
   
@@ -89,10 +81,10 @@ export default function VerifyEmailPage() {
       <Card className="w-full max-w-md shadow-lg">
         <CardHeader className="space-y-1">
           <CardTitle className="text-2xl font-bold text-center">
-            {t("auth.verifyAccount")}
+            {t("auth.resetPassword")}
           </CardTitle>
           <CardDescription className="text-center">
-            {t("auth.verifyAccountDescription")}
+            {t("auth.resetPasswordDescription")}
           </CardDescription>
         </CardHeader>
         
@@ -103,9 +95,9 @@ export default function VerifyEmailPage() {
                 <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
                   <CheckCircle className="h-10 w-10 text-primary" />
                 </div>
-                <h3 className="text-xl font-semibold">{t("auth.accountVerified")}</h3>
+                <h3 className="text-xl font-semibold">{t("auth.passwordReset")}</h3>
                 <p className="text-muted-foreground">
-                  {t("auth.accountVerifiedDescription")}
+                  {t("auth.passwordResetDescription")}
                 </p>
               </div>
               
@@ -128,30 +120,72 @@ export default function VerifyEmailPage() {
               
               <div className="space-y-2">
                 <Label htmlFor="email">{t("auth.email")}</Label>
-                <div className="relative">
-                  <Mail className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="name@example.com" 
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="pl-10"
-                    required
-                    disabled={!!emailFromParams}
-                  />
-                </div>
+                <Input 
+                  id="email" 
+                  type="email" 
+                  placeholder="name@example.com" 
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  disabled={!!emailFromParams}
+                />
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="code">{t("auth.code")}</Label>
-                <Input 
-                  id="code" 
-                  placeholder="123456" 
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
-                />
+                <Label htmlFor="password">{t("auth.newPassword")}</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    id="password" 
+                    type={showPassword ? "text" : "password"} 
+                    placeholder="••••••••" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="pl-10 pr-10"
+                    required
+                  />
+                  <button 
+                    type="button"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {t("auth.passwordRequirements")}
+                </p>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword">{t("auth.confirmPassword")}</Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                  <Input 
+                    id="confirmPassword" 
+                    type={showConfirmPassword ? "text" : "password"} 
+                    placeholder="••••••••" 
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className="pl-10 pr-10"
+                    required
+                  />
+                  <button 
+                    type="button"
+                    className="absolute right-3 top-3 text-muted-foreground hover:text-foreground"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
               
               <Button 
@@ -165,26 +199,12 @@ export default function VerifyEmailPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                     </svg>
-                    {t("auth.verifying")}
+                    {t("auth.resetting")}
                   </span>
                 ) : (
-                  t("auth.verifyCode")
+                  t("auth.resetPassword")
                 )}
               </Button>
-              
-              <div className="text-center">
-                <p className="text-sm text-muted-foreground mb-2">
-                  {t("auth.didntReceiveCode")}
-                </p>
-                <Button 
-                  variant="outline" 
-                  type="button" 
-                  onClick={handleResendCode}
-                  className="text-xs"
-                >
-                  {t("auth.resendCode")}
-                </Button>
-              </div>
             </form>
           )}
         </CardContent>
@@ -193,6 +213,7 @@ export default function VerifyEmailPage() {
           {!isSubmitted && (
             <Button variant="ghost" size="sm" asChild>
               <Link href="/login">
+                <ArrowLeft className="mr-2 h-4 w-4" />
                 {t("auth.backToLogin")}
               </Link>
             </Button>
