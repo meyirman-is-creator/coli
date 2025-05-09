@@ -2,7 +2,7 @@ import "./globals.css";
 import type { Metadata } from "next";
 import { Montserrat } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
-import { Toaster } from "react-hot-toast";
+import { Toaster } from "@/components/ui/sonner"
 import { ReduxProvider } from "@/store/provider";
 import { Header } from "@/components/layout/header";
 import { Footer } from "@/components/layout/footer";

@@ -302,7 +302,7 @@ export default function ApartmentsPage() {
               <p className="text-sm text-muted-foreground">
                 {status === "loading" && page === 1
                   ? t("apartments.loading", "Загрузка...")
-                  : t("apartments.found", { count: totalCount }, `Найдено: ${totalCount} вариантов`)}
+                  : t("apartments.found", `Найдено: ${totalCount} вариантов`, { count: totalCount })}
               </p>
             </div>
 
@@ -310,7 +310,9 @@ export default function ApartmentsPage() {
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                   {apartments.map((apartment) => (
-                    <ApartmentCard key={apartment.id} apartment={apartment} />
+                    <ApartmentCard key={apartment.id} 
+                    //card={apartment} 
+                    />
                   ))}
                 </div>
 
@@ -352,13 +354,13 @@ export default function ApartmentsPage() {
                 {!isMobile && apartments.length > 0 && (
                   <div className="absolute top-4 right-4 w-80 max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-lg p-4 border">
                     <h3 className="text-sm font-medium mb-3">
-                      {t("apartments.found", { count: totalCount }, `Найдено: ${totalCount} вариантов`)}
+                      {t("apartments.found", `Найдено: ${totalCount} вариантов`, { count: totalCount })}
                     </h3>
                     <div className="space-y-3">
                       {apartments.slice(0, 5).map((apartment) => (
                         <ApartmentCard
                           key={apartment.id}
-                          apartment={apartment}
+                        //   card={apartment}
                           variant="compact"
                         />
                       ))}
@@ -368,7 +370,7 @@ export default function ApartmentsPage() {
                           className="w-full"
                           onClick={() => setView("list")}
                         >
-                          {t("apartments.viewAll", { count: totalCount - 5 }, `Посмотреть все (${totalCount - 5})`)}
+                          {t("apartments.viewAll", `Посмотреть все (${totalCount - 5})`, { count: totalCount - 5 })}
                         </Button>
                       )}
                     </div>
