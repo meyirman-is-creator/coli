@@ -16,6 +16,7 @@ import {
   DialogClose
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { useClientTranslation } from "@/i18n/client";
 import {
   Calendar,
   Home,
@@ -51,6 +52,7 @@ interface ApartmentCardProps {
   className?: string;
   onFavoriteToggle?: (id: number) => void;
   isFavorite?: boolean;
+  locale?: "en" | "ru";
 }
 
 export default function ApartmentCard({
@@ -58,8 +60,10 @@ export default function ApartmentCard({
   variant = "default",
   className = "",
   onFavoriteToggle,
-  isFavorite = false
+  isFavorite = false,
+  locale = "ru"
 }: ApartmentCardProps) {
+  const { t } = useClientTranslation(locale, "apartments");
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [copied, setCopied] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
@@ -67,9 +71,13 @@ export default function ApartmentCard({
   
   // Format available date
   const formatDate = (dateString: string | null) => {
-    if (!dateString) return "Не указано";
+    if (!dateString) return t("cards.availableFrom");
     const date = new Date(dateString);
-    return new Intl.DateTimeFormat('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' }).format(date);
+    return new Intl.DateTimeFormat(locale === "en" ? 'en-US' : 'ru-RU', { 
+      day: 'numeric', 
+      month: 'long', 
+      year: 'numeric' 
+    }).format(date);
   };
   
   // Format price
@@ -95,14 +103,9 @@ export default function ApartmentCard({
     }
   };
 
-  // Get gender label
+  // Get gender label using translations
   const getGenderLabel = (gender: string): string => {
-    const genderMap: Record<string, string> = {
-      "MALE": "Мужской",
-      "FEMALE": "Женский",
-      "OTHER": "Любой пол"
-    };
-    return genderMap[gender] || "Любой пол";
+    return t(`cards.gender.${gender}`) || t("cards.gender.ANY");
   };
 
   // Compact variant for sidebar/map views
@@ -133,12 +136,12 @@ export default function ApartmentCard({
             <div className="flex items-center justify-between mt-2">
               <div className="text-xs flex items-center">
                 <Users className="h-3 w-3 mr-1 text-muted-foreground" />
-                <span>{getGenderLabel(card.selectedGender)} · {card.roommates} чел.</span>
+                <span>{getGenderLabel(card.selectedGender)} · {card.roommates} {t("cards.peopleCount", { count: card.roommates })}</span>
               </div>
               
               <Button variant="ghost" size="sm" className="p-0 h-auto" asChild>
                 <Link href={`/apartments/${card.announcementId}`}>
-                  Подробнее
+                  {t("cards.details")}
                 </Link>
               </Button>
             </div>
@@ -165,7 +168,7 @@ export default function ApartmentCard({
             />
             <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-black/20 to-transparent"></div>
             <Badge className="absolute top-3 left-3 bg-yellow-500 hover:bg-yellow-600">
-              <Star className="h-3 w-3 mr-1" /> Рекомендуемое
+              <Star className="h-3 w-3 mr-1" /> {t("cards.featured")}
             </Badge>
             <div className="absolute top-3 right-3 bg-primary text-primary-foreground px-2.5 py-1.5 rounded-md text-sm font-semibold shadow-md">
               {formatPrice(card.cost)}
@@ -193,7 +196,7 @@ export default function ApartmentCard({
             <h3 className="text-lg font-semibold mb-2 line-clamp-1">{card.title}</h3>
             <div className="flex items-center text-sm text-muted-foreground mb-4">
               <MapPin className="h-4 w-4 mr-2 flex-shrink-0" />
-              <span className="truncate">{card.address || "Адрес не указан"}</span>
+              <span className="truncate">{card.address || t("address.notSpecified")}</span>
             </div>
             
             <div className="grid grid-cols-2 gap-y-2 mb-4">
@@ -205,11 +208,11 @@ export default function ApartmentCard({
               )}
               <div className="flex items-center text-sm">
                 <Home className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span>{card.roomCount} комнат{Number(card.roomCount) > 1 ? 'ы' : 'а'}</span>
+                <span>{card.roomCount} {t("cards.roomCount", { count: parseInt(card.roomCount) })}</span>
               </div>
               <div className="flex items-center text-sm col-span-2">
                 <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-                <span>{getGenderLabel(card.selectedGender)} · {card.roommates} чел.</span>
+                <span>{getGenderLabel(card.selectedGender)} · {card.roommates} {t("cards.peopleCount", { count: card.roommates })}</span>
               </div>
             </div>
           </CardContent>
@@ -217,7 +220,7 @@ export default function ApartmentCard({
           <CardFooter className="px-4 pb-4 pt-0">
             <Button className="w-full group-hover:bg-primary/90" asChild>
               <Link href={`/apartments/${card.announcementId}`} className="flex items-center justify-center">
-                Подробнее
+                {t("cards.details")}
                 <ArrowRight className="h-4 w-4 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
@@ -227,9 +230,9 @@ export default function ApartmentCard({
         <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
-              <DialogTitle>Поделиться объявлением</DialogTitle>
+              <DialogTitle>{t("cards.shareListingTitle")}</DialogTitle>
               <DialogDescription>
-                Скопируйте ссылку и поделитесь с друзьями
+                {t("cards.shareListingDescription")}
               </DialogDescription>
             </DialogHeader>
             <div className="flex items-center space-x-2">
@@ -242,7 +245,7 @@ export default function ApartmentCard({
                 />
               </div>
               <Button size="sm" className="px-3" onClick={handleCopy}>
-                <span className="sr-only">Copy</span>
+                <span className="sr-only">{t("cards.copy")}</span>
                 {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
               </Button>
             </div>
@@ -294,7 +297,7 @@ export default function ApartmentCard({
           <h3 className="text-xl font-semibold mb-2">{card.title}</h3>
           <div className="flex items-center text-sm text-muted-foreground mb-4">
             <MapPin className="h-4 w-4 mr-1 flex-shrink-0" />
-            <span>{card.address || "Адрес не указан"}</span>
+            <span>{card.address || t("address.notSpecified")}</span>
           </div>
 
           <div className="grid grid-cols-2 gap-y-2 gap-x-4 mb-6">
@@ -306,28 +309,28 @@ export default function ApartmentCard({
             )}
             <div className="flex items-center text-sm">
               <Building className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span>{card.roomCount} комнат{Number(card.roomCount) > 1 ? 'ы' : 'а'}</span>
+              <span>{card.roomCount} {t("cards.roomCount", { count: parseInt(card.roomCount) })}</span>
             </div>
             <div className="flex items-center text-sm">
               <VenusAndMars className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span>{getGenderLabel(card.selectedGender)} чел.</span>
+              <span>{getGenderLabel(card.selectedGender)}</span>
             </div>
             <div className="flex items-center text-sm">
               <Users className="h-4 w-4 mr-2 text-muted-foreground" />
-              <span>{card.roommates} чел.</span>
+              <span>{card.roommates} {t("cards.peopleCount", { count: card.roommates })}</span>
             </div>
           </div>
           
           {card.consideringOnlyNPeople && (
             <Badge variant="outline" className="mb-4 self-start">
-              Рассматривается как единое целое
+              {t("cards.consideringAsWhole")}
             </Badge>
           )}
 
           <div className="mt-auto">
             <Button className="w-full" asChild>
               <Link href={`/apartments/${card.announcementId}`} className="flex items-center justify-center">
-                Узнать больше
+                {t("cards.learnMore")}
                 <ArrowRight className={`h-4 w-4 ml-2 transition-transform ${isHovered ? 'translate-x-1' : ''}`} />
               </Link>
             </Button>
@@ -338,9 +341,9 @@ export default function ApartmentCard({
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Поделиться объявлением</DialogTitle>
+            <DialogTitle>{t("cards.shareListingTitle")}</DialogTitle>
             <DialogDescription>
-              Скопируйте ссылку и поделитесь с друзьями
+              {t("cards.shareListingDescription")}
             </DialogDescription>
           </DialogHeader>
           <div className="flex items-center space-x-2">
@@ -353,7 +356,7 @@ export default function ApartmentCard({
               />
             </div>
             <Button size="sm" className="px-3" onClick={handleCopy}>
-              <span className="sr-only">Copy</span>
+              <span className="sr-only">{t("cards.copy")}</span>
               {copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}
             </Button>
           </div>

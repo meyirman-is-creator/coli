@@ -4,6 +4,7 @@ import React, { useRef, useEffect, useState } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
 import { useTheme } from "next-themes";
+import { useClientTranslation } from "@/i18n/client";
 import { Loader2, MapPin, Search, Building, Home, X, ChevronRight, ChevronLeft, List } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useMediaQuery } from "react-responsive";
@@ -63,6 +64,11 @@ interface MapProps {
    * Initial zoom level
    */
   initialZoom?: number;
+
+  /**
+   * Current locale
+   */
+  locale?: "en" | "ru";
 }
 
 /**
@@ -75,8 +81,10 @@ export default function ApartmentsMap({
   onMarkerClick,
   className = "",
   showMobileList = true,
-  initialZoom = 12
+  initialZoom = 12,
+  locale = "ru"
 }: MapProps) {
+  const { t } = useClientTranslation(locale, "apartments");
   const { theme } = useTheme();
   const mapContainerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<mapboxgl.Map | null>(null);
@@ -460,15 +468,9 @@ export default function ApartmentsMap({
     }
   };
   
-  // Get gender label
+  // Get gender label using translations
   const getGenderLabel = (gender: string = "ANY"): string => {
-    const genderMap: Record<string, string> = {
-      "MALE": "Мужской",
-      "FEMALE": "Женский",
-      "ANY": "Любой пол",
-      "OTHER": "Любой пол"
-    };
-    return genderMap[gender] || "Любой пол";
+    return t(`cards.gender.${gender}`) || t("cards.gender.ANY");
   };
   
   // Fly to apartment location and update selected apartment
@@ -520,7 +522,7 @@ export default function ApartmentsMap({
         <div className="absolute top-4 right-14 w-80 max-h-[80vh] overflow-y-auto bg-background/90 backdrop-blur-sm border border-border rounded-lg shadow-lg">
           <div className="sticky top-0 bg-background/95 backdrop-blur p-3 border-b border-border z-10 flex justify-between items-center">
             <h3 className="font-medium text-sm">
-              Найдено: {apartments.length} объявлений
+              {t("map.found", { count: apartments.length })}
             </h3>
             <div className="flex space-x-1">
               <Button 
@@ -533,7 +535,7 @@ export default function ApartmentsMap({
                 <ChevronLeft className="h-4 w-4" />
               </Button>
               <span className="text-xs flex items-center">
-                {currentPage} из {Math.ceil(apartments.length / itemsPerPage)}
+                {currentPage} / {Math.ceil(apartments.length / itemsPerPage)}
               </span>
               <Button 
                 variant="ghost" 
@@ -578,7 +580,7 @@ export default function ApartmentsMap({
                   <p className="text-xs text-muted-foreground line-clamp-1">{apt.address}</p>
                   <div className="flex items-center gap-1 mt-1 justify-between">
                     <span className="text-xs bg-accent/40 px-1.5 py-0.5 rounded-full">
-                      {apt.roomCount || 1} комн.
+                      {apt.roomCount || 1} {t("cards.roomCount", { count: parseInt(apt.roomCount) || 1 })}
                     </span>
                     {apt.selectedGender && (
                       <span className="text-xs bg-accent/40 px-1.5 py-0.5 rounded-full">
@@ -599,7 +601,7 @@ export default function ApartmentsMap({
                 className="w-full mt-2" 
                 onClick={() => navigateToApartmentDetails(selectedApartment)}
               >
-                Посмотреть детали
+                {t("map.viewDetails")}
               </Button>
             )}
             
@@ -618,7 +620,7 @@ export default function ApartmentsMap({
                   }}
                 >
                   <Search className="h-3.5 w-3.5 mr-1.5" />
-                  Посмотреть все на списке
+                  {t("map.viewAllInList")}
                 </Button>
               </div>
             )}
@@ -631,7 +633,7 @@ export default function ApartmentsMap({
         <div className="absolute bottom-0 left-0 right-0 max-h-[40vh] overflow-y-auto bg-background/90 backdrop-blur-sm border-t border-border rounded-t-xl shadow-lg">
           <div className="sticky top-0 bg-background/95 backdrop-blur p-3 border-b border-border z-10 flex justify-between items-center">
             <h3 className="font-medium text-sm">
-              Найдено: {apartments.length} объявлений
+              {t("map.found", { count: apartments.length })}
             </h3>
             <Button
               variant="ghost"
@@ -686,7 +688,7 @@ export default function ApartmentsMap({
                 className="w-full mt-2" 
                 onClick={() => navigateToApartmentDetails(selectedApartment)}
               >
-                Посмотреть детали
+                {t("map.viewDetails")}
               </Button>
             )}
             
@@ -699,7 +701,7 @@ export default function ApartmentsMap({
                 disabled={currentPage === 1}
               >
                 <ChevronLeft className="h-3.5 w-3.5 mr-1.5" />
-                Назад
+                {t("map.back")}
               </Button>
               
               <Button 
@@ -709,7 +711,7 @@ export default function ApartmentsMap({
                 onClick={handleNextPage}
                 disabled={currentPage * itemsPerPage >= apartments.length}
               >
-                Вперед
+                {t("map.forward")}
                 <ChevronRight className="h-3.5 w-3.5 ml-1.5" />
               </Button>
             </div>
@@ -724,7 +726,7 @@ export default function ApartmentsMap({
           onClick={() => setIsMobileListVisible(true)}
         >
           <List className="h-4 w-4 mr-2" />
-          Показать список
+          {t("map.showList")}
         </Button>
       )}
       
@@ -733,7 +735,7 @@ export default function ApartmentsMap({
         <div className="absolute inset-0 flex items-center justify-center bg-background/70 backdrop-blur-sm z-10">
           <div className="flex flex-col items-center justify-center space-y-2">
             <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-sm font-medium">Загрузка карты...</p>
+            <p className="text-sm font-medium">{t("map.loading")}</p>
           </div>
         </div>
       )}
@@ -743,9 +745,9 @@ export default function ApartmentsMap({
         <div className="absolute inset-0 flex items-center justify-center bg-background/50 backdrop-blur-sm">
           <div className="bg-card p-6 rounded-lg shadow-md border text-center max-w-md">
             <MapPin className="h-12 w-12 mx-auto mb-3 text-muted-foreground" />
-            <h3 className="text-lg font-semibold mb-2">Объявления не найдены</h3>
+            <h3 className="text-lg font-semibold mb-2">{t("map.noListings")}</h3>
             <p className="text-muted-foreground mb-4">
-              По данному запросу не найдено объявлений. Попробуйте изменить параметры поиска.
+              {t("map.tryChanging")}
             </p>
           </div>
         </div>

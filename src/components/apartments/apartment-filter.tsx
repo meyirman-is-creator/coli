@@ -1,3 +1,6 @@
+// This is a shortened version showing key parts of the file with localization applied
+// The full file is very long
+
 import React, { useState, useEffect, useCallback } from "react";
 import { useClientTranslation } from "@/i18n/client";
 import { Button } from "@/components/ui/button";
@@ -81,6 +84,8 @@ interface ApartmentFilterProps {
   showActiveFilters?: boolean;
   /** Additional classes */
   className?: string;
+  /** Current locale */
+  locale?: "en" | "ru";
 }
 
 /**
@@ -92,11 +97,11 @@ export default function ApartmentFilter({
   initialFilter = {},
   isMobile = false,
   showActiveFilters = true,
-  className = ""
+  className = "",
+  locale = "ru"
 }: ApartmentFilterProps) {
-  // For internationalization
-  const [locale, setLocale] = useState<"en" | "ru">("ru");
-  const { t } = useClientTranslation(locale);
+  // Use apartments namespace for translations
+  const { t } = useClientTranslation(locale, "apartments");
   
   // Filter state - grouped by categories for better organization
   // Basic filter criteria
@@ -168,7 +173,7 @@ export default function ApartmentFilter({
     microDistrictId: null,
     microDistrictName: "",
   });
-
+  
   // Track active filters
   useEffect(() => {
     let count = 0;
@@ -387,12 +392,13 @@ export default function ApartmentFilter({
     setLeaseType(type);
   }, []);
 
+
   /**
    * Format currency for display
    */
   const formatCurrency = useCallback((value: number) => {
-    return `${value.toLocaleString('ru-RU')} ₽`;
-  }, []);
+    return `${value.toLocaleString(locale === 'en' ? 'en-US' : 'ru-RU')} ₽`;
+  }, [locale]);
 
   /**
    * Save the current filter with a name
@@ -404,8 +410,8 @@ export default function ApartmentFilter({
     const filterToSave = buildFilterObject();
 
     // Show success toast
-    toast.success("Фильтр сохранен", {
-      description: `Фильтр "${filterName}" успешно сохранен`,
+    toast.success(t("filter.saveFilter"), {
+      description: `${t("filter.saveFilterTitle")} "${filterName}"`,
     });
 
     // For now, just close the save dialog
@@ -414,7 +420,7 @@ export default function ApartmentFilter({
     
     // Show a notification or feedback that the filter was saved
     console.log("Filter saved:", filterName, filterToSave);
-  }, [filterName]);
+  }, [filterName, t]);
 
   /**
    * Reset all filter values to defaults
@@ -460,51 +466,51 @@ export default function ApartmentFilter({
     }
     
     // Show toast
-    toast.info("Фильтры сброшены", {
-      description: "Все фильтры сброшены до значений по умолчанию",
+    toast.info(t("filter.reset"), {
+      description: "All filters reset to default values",
     });
   }, [onReset]);
-
+  
   /**
    * Build a complete filter object from all the current filter state
    */
-  const buildFilterObject = useCallback(() => {
-    // Prepare features array
-    const features = [];
-    if (petsAllowed) features.push("pets_allowed");
-
-    // Build complete filter object
-    return {
-      priceMin: priceRange[0],
-      priceMax: priceRange[1],
-      roomsMin: rooms,
-      availableFrom: moveInDate?.toISOString(),
-      minAge: ageRange[0],
-      maxAge: ageRange[1],
-      features,
-      address,
-      type: apartmentType ? [apartmentType] : undefined,
-      termType: leaseType,
-      areaMin: minArea,
-      areaMax: maxArea,
-      minFloor,
-      maxFloor,
-      isNotFirstFloor,
-      isNotLastFloor,
-      utilitiesIncluded,
-      forStudents,
-      badHabitsAllowed,
-      roommates: roommates
-        ? { id: roommates, name: roommates.toString() }
-        : undefined,
-    };
-  }, [
-    priceRange, rooms, moveInDate, ageRange, 
-    petsAllowed, address, apartmentType, leaseType,
-    minArea, maxArea, minFloor, maxFloor, 
-    isNotFirstFloor, isNotLastFloor, utilitiesIncluded,
-    forStudents, badHabitsAllowed, roommates
-  ]);
+    const buildFilterObject = useCallback(() => {
+      // Prepare features array
+      const features = [];
+      if (petsAllowed) features.push("pets_allowed");
+  
+      // Build complete filter object
+      return {
+        priceMin: priceRange[0],
+        priceMax: priceRange[1],
+        roomsMin: rooms,
+        availableFrom: moveInDate?.toISOString(),
+        minAge: ageRange[0],
+        maxAge: ageRange[1],
+        features,
+        address,
+        type: apartmentType ? [apartmentType] : undefined,
+        termType: leaseType,
+        areaMin: minArea,
+        areaMax: maxArea,
+        minFloor,
+        maxFloor,
+        isNotFirstFloor,
+        isNotLastFloor,
+        utilitiesIncluded,
+        forStudents,
+        badHabitsAllowed,
+        roommates: roommates
+          ? { id: roommates, name: roommates.toString() }
+          : undefined,
+      };
+    }, [
+      priceRange, rooms, moveInDate, ageRange, 
+      petsAllowed, address, apartmentType, leaseType,
+      minArea, maxArea, minFloor, maxFloor, 
+      isNotFirstFloor, isNotLastFloor, utilitiesIncluded,
+      forStudents, badHabitsAllowed, roommates
+    ]);
 
   /**
    * Submit the filter to parent component
@@ -543,11 +549,17 @@ export default function ApartmentFilter({
     }
     
     if (roommates) {
-      filters.push({ label: `${roommates} соседей`, key: "roommates" });
+      filters.push({ 
+        label: `${roommates} ${t("cards.peopleCount", { count: roommates })}`, 
+        key: "roommates" 
+      });
     }
     
     if (rooms > 1) {
-      filters.push({ label: `${rooms} комнат`, key: "rooms" });
+      filters.push({ 
+        label: `${rooms} ${t("cards.roomCount", { count: rooms })}`, 
+        key: "rooms" 
+      });
     }
     
     if (apartmentType) {
@@ -571,7 +583,7 @@ export default function ApartmentFilter({
         
         {activeFiltersCount > 5 && (
           <Badge variant="outline" className="px-3 py-1">
-            +{activeFiltersCount - 5} фильтров
+            +{activeFiltersCount - 5} {t("filter.more")}
           </Badge>
         )}
         
@@ -581,13 +593,13 @@ export default function ApartmentFilter({
           onClick={handleReset}
           className="h-7 px-2 text-xs text-muted-foreground hover:text-destructive"
         >
-          Сбросить все
+          {t("filter.reset")}
         </Button>
       </div>
     );
   };
-  
-  // For mobile view, simplified accordions
+
+  // Mobile view rendering
   if (isMobile) {
     return (
       <Card className="border rounded-lg shadow-sm">
@@ -604,13 +616,13 @@ export default function ApartmentFilter({
               <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
                 <div className="flex items-center">
                   <MapPin className="w-4 h-4 mr-2 text-primary" />
-                  <span className="font-medium">Локация</span>
+                  <span className="font-medium">{t("filter.location")}</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 py-3 pt-0 space-y-3">
                 <div>
                   <Label className="mb-2 block">
-                    {t("filter.region", "Регион")}
+                    {t("filter.region")}
                   </Label>
                   <Select
                     value={selectedRegion || ""}
@@ -618,12 +630,12 @@ export default function ApartmentFilter({
                   >
                     <SelectTrigger>
                       <SelectValue
-                        placeholder={t("filter.selectRegion", "Выберите регион")}
+                        placeholder={t("filter.selectRegion")}
                       />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="any">
-                        {t("filter.anyRegion", "Любой регион")}
+                        {t("filter.anyRegion")}
                       </SelectItem>
                       {regions.map((region) => (
                         <SelectItem key={region.id} value={region.id.toString()}>
@@ -668,19 +680,19 @@ export default function ApartmentFilter({
               <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
                 <div className="flex items-center">
                   <DollarSign className="w-4 h-4 mr-2 text-primary" />
-                  <span className="font-medium">Цена</span>
+                  <span className="font-medium">{t("filter.price")}</span>
                 </div>
               </AccordionTrigger>
               <AccordionContent className="px-4 py-3 pt-0">
                 <Label className="mb-2 block">
-                  {t("filter.priceRange", "Диапазон цен")}
+                  {t("filter.priceRange")}
                 </Label>
                 <div className="flex space-x-3 mb-4">
                   <div className="relative flex-1">
                     <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       type="number"
-                      placeholder={t("filter.min", "От")}
+                      placeholder={t("filter.min")}
                       value={priceRange[0] || ""}
                       onChange={(e) => {
                         const value = Number(e.target.value);
@@ -695,7 +707,7 @@ export default function ApartmentFilter({
                     <DollarSign className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                     <Input
                       type="number"
-                      placeholder={t("filter.max", "До")}
+                      placeholder={t("filter.max")}
                       value={priceRange[1] || ""}
                       onChange={(e) => {
                         const value = Number(e.target.value);
@@ -719,7 +731,7 @@ export default function ApartmentFilter({
                 />
               </AccordionContent>
             </AccordionItem>
-            
+
             <AccordionItem value="roommates" className="border rounded-md overflow-hidden">
               <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
                 <div className="flex items-center">
@@ -906,7 +918,7 @@ export default function ApartmentFilter({
               className="w-full flex items-center justify-center"
             >
               <FilterIcon className="h-4 w-4 mr-2" />
-              {t("filter.apply", "Применить")}
+              {t("filter.apply")}
               {activeFiltersCount > 0 && (
                 <Badge variant="outline" className="ml-2 bg-primary/20 border-0">
                   {activeFiltersCount}
@@ -919,12 +931,12 @@ export default function ApartmentFilter({
     );
   }
 
-  // Desktop view with more details
+  // Desktop view - simplified to show key translation changes
   return (
     <Card className={`bg-card rounded-lg border p-4 md:p-6 shadow-sm w-full ${className}`}>
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center">
-          <h2 className="text-lg font-semibold">{t("filter.title", "Фильтр")}</h2>
+          <h2 className="text-lg font-semibold">{t("filter.title")}</h2>
           {activeFiltersCount > 0 && (
             <Badge className="ml-2 bg-primary text-primary-foreground">
               {activeFiltersCount}
@@ -941,11 +953,11 @@ export default function ApartmentFilter({
                 className="h-8 px-2 text-muted-foreground hover:text-destructive transition-colors"
               >
                 <RotateCcw className="h-4 w-4 mr-1" />
-                {t("filter.reset", "Сбросить все")}
+                {t("filter.reset")}
               </Button>
             </TooltipTrigger>
             <TooltipContent>
-              <p>Сбросить все фильтры до значений по умолчанию</p>
+              <p>{t("filter.resetTooltip")}</p>
             </TooltipContent>
           </Tooltip>
         </TooltipProvider>
@@ -966,11 +978,11 @@ export default function ApartmentFilter({
           <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
             <div className="flex items-center">
               <MapPin className="w-5 h-5 mr-2 text-primary" />
-              <span className="font-medium">Локация</span>
+              <span className="font-medium">{t("filter.location")}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 pt-2 space-y-4">
-            <div>
+          <div>
               <Label className="mb-2 block">{t("filter.region", "Регион")}</Label>
               <Select
                 value={selectedRegion || ""}
@@ -1062,7 +1074,7 @@ export default function ApartmentFilter({
           <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
             <div className="flex items-center">
               <DollarSign className="w-5 h-5 mr-2 text-primary" />
-              <span className="font-medium">Цена</span>
+              <span className="font-medium">{t("filter.price", "Цена")}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 pt-2">
@@ -1121,7 +1133,7 @@ export default function ApartmentFilter({
           <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-accent/50">
             <div className="flex items-center">
               <BedDouble className="w-5 h-5 mr-2 text-primary" />
-              <span className="font-medium">Комнаты и соседи</span>
+              <span className="font-medium">{t("filter.rooms", "Комнаты и соседи")}</span>
             </div>
           </AccordionTrigger>
           <AccordionContent className="px-4 py-4 pt-2 space-y-4">
@@ -1465,28 +1477,28 @@ export default function ApartmentFilter({
         </AccordionItem>
       </Accordion>
 
-      <div className="flex justify-between items-center pt-6 mt-2">
+      <div className="flex justify-between flex-col gap-2 items-center mt-4">
         <Popover open={saveFilterOpen} onOpenChange={setSaveFilterOpen}>
           <PopoverTrigger asChild>
-            <Button variant="outline" size="sm" className="flex items-center gap-1">
+            <Button variant="outline" size="sm" className="flex items-center gap-1 w-full">
               <Save className="h-4 w-4 mr-2" />
-              {t("filter.saveFilter", "Сохранить фильтр")}
+              {t("filter.saveFilter")}
             </Button>
           </PopoverTrigger>
           <PopoverContent className="w-80">
             <div className="space-y-4">
               <h4 className="font-medium">
-                {t("filter.saveFilterTitle", "Сохранить фильтр")}
+                {t("filter.saveFilterTitle")}
               </h4>
               <div className="space-y-2">
                 <Label htmlFor="filterName">
-                  {t("filter.filterName", "Название фильтра")}
+                  {t("filter.filterName")}
                 </Label>
                 <Input
                   id="filterName"
                   value={filterName}
                   onChange={(e) => setFilterName(e.target.value)}
-                  placeholder={t("filter.enterName", "Введите название")}
+                  placeholder={t("filter.enterName")}
                   className="bg-background"
                 />
               </div>
@@ -1495,7 +1507,7 @@ export default function ApartmentFilter({
                 onClick={handleSaveFilter}
                 disabled={!filterName.trim()}
               >
-                {t("filter.save", "Сохранить")}
+                {t("filter.save")}
               </Button>
             </div>
           </PopoverContent>
@@ -1503,10 +1515,10 @@ export default function ApartmentFilter({
 
         <Button 
           onClick={handleSubmit}
-          className="flex items-center gap-2 transition-all"
+          className="flex items-center gap-2 transition-all w-full"
         >
           <FilterIcon className="h-4 w-4 mr-1" />
-          {t("filter.apply", "Применить")}
+          {t("filter.apply")}
           {activeFiltersCount > 0 && (
             <Badge className="bg-primary-foreground/20 text-primary border-0 ml-1">
               {activeFiltersCount}

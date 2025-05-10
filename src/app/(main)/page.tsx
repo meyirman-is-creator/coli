@@ -26,11 +26,12 @@ import {
 
 import ApartmentFilter from "@/components/apartments/apartment-filter";
 import ApartmentCard from "@/components/apartments/apartment-card";
-import ApartmentsMap from "@/components/apartments/map"; // Updated import name
+import ApartmentsMap from "@/components/apartments/map";
 
 export default function ApartmentsPage() {
   const [locale, setLocale] = useState<"en" | "ru">("ru");
-  const { t } = useClientTranslation(locale);
+  // Use the apartments namespace for translations
+  const { t } = useClientTranslation(locale, "apartments");
   const router = useRouter();
 
   // State for apartments data
@@ -62,10 +63,6 @@ export default function ApartmentsPage() {
     setIsFiltered(false);
     
     try {
-      // In a real app, this would be a real API call
-      // const response = await fetch('/api/apartments');
-      // const data = await response.json();
-      
       // For demo, simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
@@ -214,14 +211,8 @@ export default function ApartmentsPage() {
     setPage(prev => prev + 1);
     
     try {
-      // This would be a real API call with pagination in production
-      // const response = await fetch(`/api/apartments?page=${page + 1}`);
-      // const data = await response.json();
-      
-      // For demo, simulate API call delay
       await new Promise(resolve => setTimeout(resolve, 1000));
       
-      // Mock data for demonstration - in real app, this would append new data
       const mockNewData = [] as any[];
       
       setApartments(prev => [...prev, ...mockNewData]);
@@ -238,12 +229,10 @@ export default function ApartmentsPage() {
   const handleFilterSubmit = (filterData: any) => {
     console.log("Filter submitted:", filterData);
     
-    // In production, this would make an API call with filter parameters
     setLoading(true);
     setIsFiltered(true);
     
     setTimeout(() => {
-      // Simulate filtering by just showing the first few items
       setApartments(prevApartments => prevApartments.slice(0, 3));
       setTotalCount(3);
       setHasMore(false);
@@ -262,7 +251,7 @@ export default function ApartmentsPage() {
     });
   };
 
-  // Handle marker click on map - now directly navigates to the apartment page
+  // Handle marker click on map
   const handleMarkerClick = (apartment: any) => {
     if (apartment) {
       router.push(`/apartments/${apartment.announcementId}`);
@@ -271,10 +260,10 @@ export default function ApartmentsPage() {
 
   // Sort options
   const sortOptions = [
-    { value: "newest", label: "Новые" },
-    { value: "price-asc", label: "Цена: по возрастанию" },
-    { value: "price-desc", label: "Цена: по убыванию" },
-    { value: "relevance", label: "По релевантности" },
+    { value: "newest", label: t("listings.sorting.newest") },
+    { value: "price-asc", label: t("listings.sorting.priceAsc") },
+    { value: "price-desc", label: t("listings.sorting.priceDesc") },
+    { value: "relevance", label: t("listings.sorting.relevance") },
   ];
 
   // Handle sorting
@@ -290,8 +279,6 @@ export default function ApartmentsPage() {
       } else if (value === "price-desc") {
         sortedApartments.sort((a, b) => b.cost - a.cost);
       } else if (value === "newest") {
-        // Newest would likely sort by date in real app
-        // For demo, just reverse the array
         sortedApartments.reverse();
       }
       
@@ -304,7 +291,7 @@ export default function ApartmentsPage() {
     <div className="container-custom">
       <div className="py-6">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold">Поиск жилья</h1>
+          <h1 className="text-2xl font-bold">{t("listings.title")}</h1>
 
           <div className="flex items-center gap-2">
             <Tabs
@@ -315,11 +302,11 @@ export default function ApartmentsPage() {
               <TabsList>
                 <TabsTrigger value="list">
                   <ListIcon className="h-4 w-4 mr-2" />
-                  Список
+                  {t("listings.viewOptions.list")}
                 </TabsTrigger>
                 <TabsTrigger value="map">
                   <MapIcon className="h-4 w-4 mr-2" />
-                  Карта
+                  {t("listings.viewOptions.map")}
                 </TabsTrigger>
               </TabsList>
             </Tabs>
@@ -384,8 +371,8 @@ export default function ApartmentsPage() {
             <div className="flex justify-between items-center mb-4">
               <p className="text-sm text-muted-foreground">
                 {loading && page === 1
-                  ? "Загрузка..."
-                  : `Найдено: ${totalCount} вариантов`}
+                  ? t("listings.loading")
+                  : t("listings.found", { count: totalCount })}
               </p>
               
               {isFiltered && (
@@ -396,7 +383,7 @@ export default function ApartmentsPage() {
                   className="text-xs flex items-center"
                 >
                   <RefreshCw className="h-3 w-3 mr-1" />
-                  Сбросить фильтры
+                  {t("listings.resetFilters")}
                 </Button>
               )}
             </div>
@@ -413,7 +400,7 @@ export default function ApartmentsPage() {
                   }}
                   className="ml-4"
                 >
-                  Попробовать снова
+                  {t("listings.resetFilters")}
                 </Button>
               </div>
             )}
@@ -427,6 +414,7 @@ export default function ApartmentsPage() {
                       card={apartment}
                       onFavoriteToggle={handleFavoriteToggle}
                       isFavorite={favorites.includes(apartment.announcementId)}
+                      locale={locale}
                     />
                   ))}
                 </div>
@@ -438,7 +426,7 @@ export default function ApartmentsPage() {
                 ) : hasMore ? (
                   <div className="flex justify-center mt-8">
                     <Button onClick={handleLoadMore} variant="outline">
-                      Загрузить еще
+                      {t("listings.loadMore")}
                     </Button>
                   </div>
                 ) : null}
@@ -449,16 +437,16 @@ export default function ApartmentsPage() {
                       <SearchX className="h-8 w-8 text-muted-foreground" />
                     </div>
                     <p className="text-lg font-medium mb-2">
-                      Нет результатов
+                      {t("listings.noResults")}
                     </p>
                     <p className="text-sm text-muted-foreground mb-4 max-w-md">
-                      По вашему запросу ничего не найдено. Попробуйте изменить параметры поиска или сбросить фильтры.
+                      {t("listings.noResultsDescription")}
                     </p>
                     <Button
                       variant="outline"
                       onClick={fetchApartments}
                     >
-                      Сбросить фильтры
+                      {t("listings.resetFilters")}
                     </Button>
                   </div>
                 )}
@@ -473,6 +461,7 @@ export default function ApartmentsPage() {
                 className="rounded-lg border h-[70vh]"
                 showMobileList={true}
                 initialZoom={12}
+                locale={locale}
               />
             )}
           </div>
