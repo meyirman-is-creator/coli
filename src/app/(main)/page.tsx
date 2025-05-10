@@ -26,7 +26,7 @@ import {
 
 import ApartmentFilter from "@/components/apartments/apartment-filter";
 import ApartmentCard from "@/components/apartments/apartment-card";
-import Map from "@/components/apartments/map";
+import ApartmentsMap from "@/components/apartments/map"; // Updated import name
 
 export default function ApartmentsPage() {
   const [locale, setLocale] = useState<"en" | "ru">("ru");
@@ -262,21 +262,11 @@ export default function ApartmentsPage() {
     });
   };
 
-  // Handle marker click on map
+  // Handle marker click on map - now directly navigates to the apartment page
   const handleMarkerClick = (apartment: any) => {
-    router.push(`/apartments/${apartment.announcementId}`);
-  };
-
-  // Handle map area selection
-  const handleMapPointsSelected = (points: { x: number; y: number }[]) => {
-    console.log("Selected map points:", points);
-    // In production, would filter apartments based on coordinates
-    setLoading(true);
-    
-    setTimeout(() => {
-      setLoading(false);
-      // For demo, no actual filtering
-    }, 800);
+    if (apartment) {
+      router.push(`/apartments/${apartment.announcementId}`);
+    }
   };
 
   // Sort options
@@ -476,43 +466,14 @@ export default function ApartmentsPage() {
             )}
 
             {view === "map" && (
-              <div className="relative">
-                <Map
-                  apartments={apartments}
-                  isLoading={loading && page === 1}
-                  onPointsSelected={handleMapPointsSelected}
-                  onMarkerClick={handleMarkerClick}
-                  className="rounded-lg border h-[70vh]"
-                />
-
-                {!isMobile && apartments.length > 0 && (
-                  <div className="absolute top-4 right-4 w-80 max-h-[60vh] overflow-y-auto bg-white shadow-lg rounded-lg p-4 border">
-                    <h3 className="text-sm font-medium mb-3">
-                      Найдено: {totalCount} вариантов
-                    </h3>
-                    <div className="space-y-3">
-                      {apartments.slice(0, 5).map((apartment) => (
-                        <ApartmentCard
-                          key={apartment.announcementId}
-                          card={apartment}
-                          variant="compact"
-                          onFavoriteToggle={handleFavoriteToggle}
-                          isFavorite={favorites.includes(apartment.announcementId)}
-                        />
-                      ))}
-                      {apartments.length > 5 && (
-                        <Button
-                          variant="outline"
-                          className="w-full"
-                          onClick={() => setView("list")}
-                        >
-                          Посмотреть все ({totalCount - 5})
-                        </Button>
-                      )}
-                    </div>
-                  </div>
-                )}
-              </div>
+              <ApartmentsMap
+                apartments={apartments}
+                isLoading={loading && page === 1}
+                onMarkerClick={handleMarkerClick}
+                className="rounded-lg border h-[70vh]"
+                showMobileList={true}
+                initialZoom={12}
+              />
             )}
           </div>
         </div>

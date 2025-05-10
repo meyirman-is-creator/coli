@@ -108,11 +108,6 @@ export function Header() {
       href: "/",
       icon: <Search className="h-4 w-4 mr-2" />,
     },
-    {
-      title: locale === "en" ? "Map" : "Карта",
-      href: "/map",
-      icon: <MapPin className="h-4 w-4 mr-2" />,
-    },
   ];
 
   // Check if we're on the homepage
