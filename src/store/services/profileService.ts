@@ -4,96 +4,130 @@ import {
   ChangePasswordRequest,
 } from "@/types/profile";
 import { QuestionnaireResponse } from "@/types/apartment";
-
-// Mock profile data for development
-const mockProfile: ProfileData = {
-  id: "profile1",
-  userId: "user1",
-  firstName: "Александр",
-  lastName: "Иванов",
-  displayName: "Alex",
-  bio: "Работаю в IT-компании, люблю спорт и путешествия.",
-  gender: "male",
-  birthDate: "1995-05-15",
-  occupation: "Программист",
-  photoUrl: "/api/placeholder/200/200",
-  contacts: {
-    email: "alex@example.com",
-    phone: "+7 (925) 123-45-67",
-    telegram: "@alex_example",
-  },
-  socialMedia: {
-    instagram: "alex_example",
-    facebook: "alexander.example",
-  },
-  userStatus: "actively_searching",
-  savedFilters: [
-    {
-      id: "filter1",
-      userId: "user1",
-      name: "Поиск в центре",
-      cityId: "city1",
-      type: ["apartment", "studio"],
-      priceMin: 30000,
-      priceMax: 70000,
-      roomsMin: 1,
-      features: ["wifi", "washing_machine"],
-      savedFilter: true,
-    },
-  ],
-  hasQuestionnaire: true,
-  createdAt: "2025-01-15T10:30:00Z",
-  updatedAt: "2025-04-20T14:45:00Z",
-};
+import { createAuthClient } from "@/utils/api-client";
 
 /**
  * Get user profile
  */
 export const getProfile = async (): Promise<ProfileData> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
-  return { ...mockProfile };
+  const authClient = createAuthClient();
+  const profileData = await authClient.get<ProfileWithFiltersResponse>('/profile');
+  
+  // Map API response to our ProfileData type
+  return mapApiProfileToProfileData(profileData);
 };
+
+// Helper type for the API response
+interface ProfileWithFiltersResponse {
+  firstName: string;
+  lastName: string;
+  email: string;
+  birthDate: string | null;
+  phoneNumber: string | null;
+  gender: string;
+  profilePhoto: string | null;
+  isPasswordHas: boolean;
+  status: string;
+  savedFilters?: any[];
+}
+
+// Helper function to map API profile to our ProfileData type
+function mapApiProfileToProfileData(apiProfile: ProfileWithFiltersResponse): ProfileData {
+  return {
+    id: '', // Will be provided by backend if needed
+    userId: '', // Will be provided by backend if needed
+    firstName: apiProfile.firstName || '',
+    lastName: apiProfile.lastName || '',
+    displayName: `${apiProfile.firstName} ${apiProfile.lastName}`,
+    bio: '',
+    gender: mapGender(apiProfile.gender),
+    birthDate: apiProfile.birthDate || undefined,
+    occupation: '',
+    photoUrl: apiProfile.profilePhoto || undefined,
+    contacts: {
+      email: apiProfile.email,
+      phone: apiProfile.phoneNumber || undefined,
+    },
+    socialMedia: {},
+    userStatus: mapUserStatus(apiProfile.status),
+    savedFilters: apiProfile.savedFilters || [],
+    hasQuestionnaire: false, // Will be determined elsewhere
+    createdAt: '',
+    updatedAt: '',
+  };
+}
+
+// Helper function to map gender from API to our type
+function mapGender(apiGender: string): 'male' | 'female' | 'other' | 'prefer_not_to_say' {
+  switch (apiGender) {
+    case 'MALE':
+      return 'male';
+    case 'FEMALE':
+      return 'female';
+    case 'OTHER':
+      return 'other';
+    default:
+      return 'prefer_not_to_say';
+  }
+}
+
+// Helper function to map user status from API to our type
+function mapUserStatus(apiStatus: string): 'actively_searching' | 'passively_searching' | 'found_housing' | 'looking_for_roommates' | 'not_looking' | 'landlord' {
+  switch (apiStatus) {
+    case 'looking_for_apartment':
+      return 'actively_searching';
+    case 'looking_for_roommate':
+      return 'looking_for_roommates';
+    default:
+      return 'actively_searching';
+  }
+}
 
 /**
  * Update user profile
  */
-export const updateProfile = async (
-  profileData: ProfileUpdateRequest
-): Promise<ProfileData> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  // In a real app, this would make a PATCH request to update the profile
-  const updatedProfile = {
-    ...mockProfile,
-    ...profileData,
-    updatedAt: new Date().toISOString(),
+export const updateProfile = async (profileData: ProfileUpdateRequest): Promise<ProfileData> => {
+  const authClient = createAuthClient();
+  
+  // Map our profile data to the API format
+  const apiProfileData = {
+    firstName: profileData.firstName,
+    lastName: profileData.lastName,
+    birthDate: profileData.birthDate,
+    phoneNumber: profileData.contacts?.phone,
+    gender: mapGenderToApi(profileData.gender),
   };
-
-  return updatedProfile;
+  
+  const updatedProfile = await authClient.put<ProfileWithFiltersResponse>('/profile/edit', apiProfileData);
+  
+  return mapApiProfileToProfileData(updatedProfile);
 };
+
+// Helper function to map our gender type to API format
+function mapGenderToApi(gender?: 'male' | 'female' | 'other' | 'prefer_not_to_say'): string {
+  switch (gender) {
+    case 'male':
+      return 'MALE';
+    case 'female':
+      return 'FEMALE';
+    case 'other':
+      return 'OTHER';
+    default:
+      return 'OTHER';
+  }
+}
 
 /**
  * Change user password
  */
-export const changePassword = async (
-  passwordData: ChangePasswordRequest
-): Promise<{ success: boolean; message: string }> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 700));
-
-  // Check if the current password is correct (for mock purposes)
-  if (passwordData.currentPassword !== "password") {
-    throw new Error("Текущий пароль указан неверно");
-  }
-
-  // Check if the new password and confirmation match
-  if (passwordData.newPassword !== passwordData.confirmPassword) {
-    throw new Error("Новый пароль и подтверждение не совпадают");
-  }
-
+export const changePassword = async (passwordData: ChangePasswordRequest): Promise<{ success: boolean; message: string }> => {
+  const authClient = createAuthClient();
+  
+  await authClient.post('/profile/update-password', {
+    oldPassword: passwordData.currentPassword,
+    newPassword: passwordData.newPassword
+  });
+  
   return {
     success: true,
     message: "Пароль успешно изменен",
@@ -103,97 +137,54 @@ export const changePassword = async (
 /**
  * Submit user questionnaire
  */
-export const submitQuestionnaire = async (
-  questionnaireData: QuestionnaireResponse
-): Promise<{ success: boolean; questionnaire: QuestionnaireResponse }> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 900));
+export const submitQuestionnaire = async (questionnaireData: QuestionnaireResponse): Promise<{ success: boolean; questionnaire: QuestionnaireResponse }> => {
+  const authClient = createAuthClient();
+  
+  // Map the questionnaire data to the API format
+  const apiQuestionnaireData = {
+    // Transform the data if needed
+    answers: Object.entries(questionnaireData).map(([key, value]) => ({
+      questionId: key,
+      answer: typeof value === 'object' ? JSON.stringify(value) : String(value)
+    }))
+  };
+  
+  await authClient.post('/survey/submit', apiQuestionnaireData);
+  
   return {
     success: true,
-    questionnaire: {
-      id: questionnaireData.id || `questionnaire-${Date.now()}`,
-      userId: "user1",
-      ...questionnaireData,
-    },
+    questionnaire: questionnaireData,
   };
-};
-
-/**
- * Update user status
- */
-export const updateUserStatus = async (
-  status: string
-): Promise<{ userStatus: string }> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  // Validate the status (basic validation)
-  const validStatuses = [
-    "actively_searching",
-    "passively_searching",
-    "found_housing",
-    "looking_for_roommates",
-    "not_looking",
-    "landlord",
-  ];
-
-  if (!validStatuses.includes(status)) {
-    throw new Error("Недопустимый статус пользователя");
-  }
-
-  return { userStatus: status };
 };
 
 /**
  * Upload profile photo
  */
-export const uploadProfilePhoto = async (
-  photoFile: File
-): Promise<{ photoUrl: string }> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1200));
-
-  // In a real app, this would upload the file to a storage service
-  // For mock purposes, we'll just return a placeholder URL
+export const uploadProfilePhoto = async (photoFile: File): Promise<{ photoUrl: string }> => {
+  const authClient = createAuthClient();
+  
+  const formData = new FormData();
+  formData.append('file', photoFile);
+  
+  await authClient.post('/profile/upload-photo', formData, {
+    headers: {}
+  });
+  
+  // The backend might return the URL, but if not, we'll need to refetch the profile
+  const updatedProfile = await getProfile();
+  
   return {
-    photoUrl: "/api/placeholder/200/200?v=" + Date.now(),
+    photoUrl: updatedProfile.photoUrl || '',
   };
 };
 
 /**
- * Get user questionnaire
+ * Delete profile photo
  */
-export const getQuestionnaire =
-  async (): Promise<QuestionnaireResponse | null> => {
-    // Simulate API request
-    await new Promise((resolve) => setTimeout(resolve, 600));
-
-    // Mock questionnaire data
-    const mockQuestionnaire: QuestionnaireResponse = {
-      id: "questionnaire1",
-      userId: "user1",
-      lifestyle: {
-        smoker: false,
-        hasPets: false,
-        drinkingHabits: "occasionally",
-        diet: "no restrictions",
-      },
-      preferences: {
-        cleanliness: "clean",
-        noise: "moderate",
-        guestFrequency: "occasionally",
-        wakeUpTime: "7:00",
-        bedTime: "23:00",
-        sharedItems: ["kitchen appliances", "cleaning supplies"],
-      },
-      habits: {
-        workSchedule: "9:00 - 18:00, пн-пт",
-        weekendActivity: "active",
-        hobbies: ["спорт", "чтение", "путешествия"],
-      },
-      aboutMe:
-        "Ответственный и дружелюбный сосед, уважающий личное пространство других.",
-    };
-
-    return mockQuestionnaire;
-  };
+export const deleteProfilePhoto = async (): Promise<boolean> => {
+  const authClient = createAuthClient();
+  
+  await authClient.patch('/profile/delete-profile-photo');
+  
+  return true;
+};

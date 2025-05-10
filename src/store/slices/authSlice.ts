@@ -152,10 +152,10 @@ export const authSlice = createSlice({
       })
       .addCase(login.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.user = action.payload.user as AuthUser;
         state.token = action.payload.token;
         state.isAuthenticated = true;
         state.isSurveyCompleted = action.payload.isSurveyCompleted;
+        // User data will be loaded separately using getCurrentUser
       })
       .addCase(login.rejected, (state, action) => {
         state.status = "failed";

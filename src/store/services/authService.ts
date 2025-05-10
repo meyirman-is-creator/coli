@@ -9,49 +9,27 @@ import {
   VerifyAccountRequest,
   AuthUser
 } from "@/types/auth";
-
-// Mock API responses for now, will be replaced with actual API calls later
-const mockUserData = {
-  id: "1",
-  firstName: "Иван",
-  lastName: "Иванов",
-  email: "test@example.com",
-  isVerified: true,
-  provider: "email",
-  photoUrl: "",
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-const mockToken = "mock-jwt-token";
+import apiClient, { createAuthClient } from "@/utils/api-client";
 
 /**
  * Login user
  */
 export const login = async (credentials: LoginCredentials) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // Validate credentials (for demo purposes)
-  if (
-    credentials.email !== "test@example.com" ||
-    credentials.password !== "password"
-  ) {
-    throw new Error("Неверный email или пароль");
-  }
+  const response = await apiClient.post<{
+    accessToken: string;
+    isSurveyCompleted: boolean;
+  }>('/auth/login', credentials);
   
-  // Store the token in localStorage if rememberMe is true
+  // Store the token based on rememberMe preference
   if (credentials.rememberMe) {
-    localStorage.setItem("accessToken", mockToken);
+    localStorage.setItem("accessToken", response.accessToken);
   } else {
-    // Use sessionStorage for session-only storage
-    sessionStorage.setItem("accessToken", mockToken);
+    sessionStorage.setItem("accessToken", response.accessToken);
   }
 
   return {
-    user: mockUserData,
-    token: mockToken,
-    isSurveyCompleted: false,
+    token: response.accessToken,
+    isSurveyCompleted: response.isSurveyCompleted
   };
 };
 
@@ -59,40 +37,35 @@ export const login = async (credentials: LoginCredentials) => {
  * Register new user
  */
 export const register = async (credentials: RegisterCredentials) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // For demo purposes, just return success
-  return {
-    message: "Регистрация успешна. Проверьте вашу почту для подтверждения аккаунта."
-  };
+  return await apiClient.post<string>('/auth/signup', {
+    firstName: credentials.firstName,
+    lastName: credentials.lastName,
+    email: credentials.email,
+    gender: credentials.gender,
+    password: credentials.password
+  });
 };
 
 /**
  * Verify user account using code
  */
 export const verifyEmail = async (verifyData: VerifyEmailRequest) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // For demo purposes, check if it's a valid code (any 6-digit number)
-  if (!/^\d{6}$/.test(verifyData.code)) {
-    throw new Error("Неверный код подтверждения");
-  }
-
-  return {
-    message: "Email успешно подтвержден",
-  };
+  return await apiClient.post<string>('/auth/verify-email', verifyData);
 };
 
 /**
  * Logout user
  */
 export const logout = async () => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 500));
+  // Call the backend to invalidate the token
+  const authClient = createAuthClient();
+  try {
+    await authClient.post('/auth/logout');
+  } catch (error) {
+    console.error('Error during logout:', error);
+  }
   
-  // Clear storage
+  // Clear storage regardless of API response
   localStorage.removeItem("accessToken");
   sessionStorage.removeItem("accessToken");
   
@@ -103,95 +76,77 @@ export const logout = async () => {
  * Request password reset
  */
 export const forgotPassword = async (data: ForgotPasswordRequest) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-  return {
-    message: "Инструкции по сбросу пароля отправлены на ваш email",
-  };
+  return await apiClient.post<string>('/auth/forgot-password', data);
 };
 
 /**
  * Verify reset code
  */
 export const verifyResetCode = async (data: VerifyCodeRequest) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  // For demo purposes, check if it's a valid code (any 6-digit number)
-  if (!/^\d{6}$/.test(data.code)) {
-    throw new Error("Неверный код подтверждения");
-  }
-
-  return {
-    message: "Код подтвержден"
-  };
+  return await apiClient.post<string>('/auth/verify-code', data);
 };
 
 /**
  * Reset password with token
  */
 export const resetPassword = async (data: ResetPasswordRequest) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-
-  return {
-    message: "Пароль успешно изменен",
-  };
+  return await apiClient.post<string>('/auth/update-password', {
+    email: data.email,
+    password: data.password
+  });
 };
 
 /**
  * Verify user account with token (email verification via link)
  */
 export const verifyAccount = async (data: VerifyAccountRequest) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-  return {
-    message: "Аккаунт успешно подтвержден",
-  };
+  return await apiClient.get<string>(`/auth/verify?token=${data.token}`);
 };
 
 /**
  * Resend verification code
  */
 export const resendCode = async (email: string) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-  return {
-    message: "Код подтверждения отправлен повторно",
-  };
+  return await apiClient.post<string>('/auth/resendCode', { email });
 };
 
 /**
  * Google login/register
  */
 export const googleAuth = async (code: string) => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+  const response = await apiClient.post<{
+    accessToken: string;
+    isSurveyCompleted: boolean;
+  }>('/auth/google', { code });
   
   // Store the token
-  localStorage.setItem("accessToken", mockToken);
+  localStorage.setItem("accessToken", response.accessToken);
   
   return {
-    token: mockToken,
-    isSurveyCompleted: false,
+    token: response.accessToken,
+    isSurveyCompleted: response.isSurveyCompleted
   };
 };
 
 /**
  * Get current authenticated user
  */
-export const getCurrentUser = async () => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 500));
+export const getCurrentUser = async (): Promise<AuthUser> => {
+  const authClient = createAuthClient();
   
-  const token = localStorage.getItem("accessToken") || sessionStorage.getItem("accessToken");
+  // Get the profile which includes user data
+  const profile = await authClient.get<any>('/profile');
   
-  if (!token) {
-    throw new Error("No authentication token found");
-  }
-  
-  return mockUserData;
+  // Map the response to our AuthUser type
+  return {
+    id: profile.id || '',
+    firstName: profile.firstName || '',
+    lastName: profile.lastName || '',
+    email: profile.email || '',
+    isVerified: true, // If we can get the profile, user is verified
+    provider: profile.provider || 'email',
+    photoUrl: profile.profilePhoto || '',
+    createdAt: profile.createdAt || new Date().toISOString(),
+    updatedAt: profile.updatedAt || new Date().toISOString()
+  };
 };

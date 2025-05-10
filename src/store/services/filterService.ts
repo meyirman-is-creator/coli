@@ -1,104 +1,79 @@
-import { ApartmentFilter } from "@/types/apartment";
 import { SaveFilterRequest } from "@/types/filter";
-
-// Mock data for saved filters
-const mockSavedFilters: ApartmentFilter[] = [
-  {
-    id: "filter1",
-    userId: "user1",
-    name: "Поиск в центре",
-    cityId: "city1",
-    type: ["apartment", "studio"],
-    priceMin: 30000,
-    priceMax: 70000,
-    roomsMin: 1,
-    features: ["wifi", "washing_machine"],
-    savedFilter: true,
-  },
-  {
-    id: "filter2",
-    userId: "user1",
-    name: "Бюджетный вариант",
-    cityId: "city1",
-    type: ["room"],
-    priceMax: 25000,
-    features: ["wifi"],
-    savedFilter: true,
-  },
-];
+import { createAuthClient } from "@/utils/api-client";
 
 /**
  * Get all saved filters for a user
  */
-export const getSavedFilters = async (): Promise<ApartmentFilter[]> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 600));
-
-  return [...mockSavedFilters];
+export const getSavedFilters = async () => {
+  const authClient = createAuthClient();
+  
+  // The filters are included in the profile response
+  const profileResponse = await authClient.get('/profile');
+  
+  return (profileResponse as any).savedFilters || [];
 };
 
 /**
  * Save a filter
  */
-export const saveFilter = async (
-  request: SaveFilterRequest
-): Promise<ApartmentFilter> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 800));
-
-  const existingFilter = mockSavedFilters.find(
-    (filter) => filter.name === request.name
-  );
-
-  if (existingFilter) {
-    // Update existing filter
-    const updatedFilter = {
-      ...existingFilter,
-      ...request.filter,
-      name: request.name,
-      savedFilter: true,
-    };
-
-    return updatedFilter;
-  } else {
-    // Create a new filter
-    const newFilter: ApartmentFilter = {
-      id: `filter-${Date.now()}`,
-      userId: "user1", // Mock current user
-      name: request.name,
-      ...request.filter,
-      savedFilter: true,
-    };
-
-    return newFilter;
-  }
+export const saveFilter = async (request: SaveFilterRequest) => {
+  const authClient = createAuthClient();
+  
+  // Format the filter data for the API
+  const filterData = {
+    selectedGender: request.filter.gender || 'OTHER',
+    region: request.filter.address?.regionId || 0,
+    district: request.filter.address?.districtId || 0,
+    microDistrict: request.filter.address?.microDistrictId || 0,
+    minPrice: request.filter.priceMin || 0,
+    maxPrice: request.filter.priceMax || 500000,
+    numberOfPeopleAreYouAccommodating: request.filter.maxOccupants || 0,
+    quantityOfRooms: request.filter.roomsMin?.toString() || '1',
+    minAge: request.filter.minAge || 18,
+    maxAge: request.filter.maxAge || 60,
+    arriveDate: request.filter.availableFrom || new Date().toISOString(),
+    minArea: request.filter.areaMin || 0,
+    maxArea: request.filter.areaMax || 0,
+    notTheFirstFloor: request.filter.isNotFirstFloor || false,
+    notTheTopFloor: request.filter.isNotLastFloor || false,
+    arePetsAllowed: request.filter.features?.includes('pets_allowed') || false,
+    isCommunalServiceIncluded: request.filter.utilitiesIncluded || false,
+    intendedForStudents: request.filter.forStudents || false,
+    typeOfHousing: request.filter.type?.[0] || 'Квартира',
+    forALongTime: request.filter.termType === 'long' || true,
+    minFloor: request.filter.minFloor || 0,
+    maxFloor: request.filter.maxFloor || 0,
+    onlyApartmentsWithoutResidents: false,
+    areBadHabitsAllowed: request.filter.badHabitsAllowed || false,
+    role: 'OWNER'
+  };
+  
+  const response = await authClient.post('/filters/save', filterData);
+  
+  // Return the saved filter with the name
+  return {
+    ...request.filter,
+    id: Date.now().toString(), // The API might return an ID, use it if available
+    name: request.name,
+    savedFilter: true
+  };
 };
 
 /**
  * Delete a saved filter
  */
-export const deleteFilter = async (filterId: string): Promise<boolean> => {
-  // Simulate API request
-  await new Promise((resolve) => setTimeout(resolve, 500));
-
-  const filterIndex = mockSavedFilters.findIndex(
-    (filter) => filter.id === filterId
-  );
-
-  if (filterIndex === -1) {
-    throw new Error("Фильтр не найден");
-  }
-
-  // In a real app, this would delete from the database
+export const deleteFilter = async (filterId: string) => {
+  const authClient = createAuthClient();
+  
+  await authClient.delete(`/filters/delete/${filterId}`);
+  
   return true;
 };
 
 /**
- * Apply a filter (just returns the filter for the reducer to use)
+ * Apply a filter (client-side only, no API call needed)
  */
-export const applyFilter = async (
-  filter: ApartmentFilter
-): Promise<ApartmentFilter> => {
-  // No need for API call here, just passing through
+export const applyFilter = async (filter: any) => {
+  // This is a client-side operation, no API call needed
   return filter;
 };

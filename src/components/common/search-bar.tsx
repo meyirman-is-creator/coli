@@ -24,7 +24,7 @@ import {
   setPriceRange, 
   setRoommates 
 } from "@/store/features/searchBar/searchBar";
-import { fetchCities } from "@/store/slices/addressSlice";
+import { fetchCities } from "@/store/features/address/addressSlice";
 import { useClientTranslation } from "@/i18n/client";
 import { AddressType } from "@/types/common";
 import { Label } from "@/components/ui/label";
@@ -213,7 +213,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 {t("search.allCities", "Все города")}
               </Button>
               
-              {cities.map((city) => (
+              {cities.map((city: AddressType) => (
                 <Button
                   key={city.id}
                   variant="ghost"
@@ -375,7 +375,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
                 {t("search.allCities", "Все города")}
               </Button>
               
-              {cities.map((city) => (
+              {cities.map((city: AddressType) => (
                 <Button
                   key={city.id}
                   variant="ghost"
