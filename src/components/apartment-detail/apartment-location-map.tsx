@@ -77,25 +77,9 @@ export default function ApartmentLocationMap({ apartment, zoom = 14 }: Apartment
         </div>
       `;
 
-      // Create a popup with theme-aware styling
-      const popupContent = `
-        <div class="p-2 max-w-xs text-sm ${isDarkMode ? 'text-gray-200 bg-gray-800' : 'text-gray-800 bg-white'}">
-          <div class="font-semibold mb-1">${apartment.title}</div>
-          ${apartment.address ? `<div class="${isDarkMode ? 'text-gray-400' : 'text-gray-500'} mb-2">${apartment.address}</div>` : ''}
-          ${apartment.cost ? `<div class="font-bold">${formatPrice(apartment.cost)}</div>` : ''}
-        </div>
-      `;
-
-      const popup = new mapboxgl.Popup({ 
-        offset: 25,
-        closeButton: false,
-        className: isDarkMode ? 'dark-theme-popup' : ''
-      }).setHTML(popupContent);
-
       // Add marker to map
       marker.current = new mapboxgl.Marker(markerElement)
         .setLngLat([lng, lat])
-        .setPopup(popup)
         .addTo(mapInstance);
 
       // Open popup by default

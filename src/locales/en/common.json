@@ -14,7 +14,7 @@
   "homePage": {
     "hero": {
       "title": "Find ideal roommates and suitable housing",
-      "description": "Coli helps you quickly find suitable housing or roommates for collaborative living. Fill out the questionnaire and join a community of like-minded people.",
+      "description": "Shanyraq helps you quickly find suitable housing or roommates for collaborative living. Fill out the questionnaire and join a community of like-minded people.",
       "findHousing": "Find Housing",
       "postListing": "Post a Listing"
     },
@@ -32,7 +32,32 @@
       "twoRooms": "2 rooms",
       "threeRooms": "3+ rooms",
       "find": "Find",
-      "advancedSearch": "Advanced Search"
+      "advancedSearch": "Advanced Search",
+      "location": "Location",
+      "anyLocation": "Any Location",
+      "allKazakhstan": "All Kazakhstan",
+      "allDistricts": "All Districts",
+      "allMicrodistricts": "All Microdistricts",
+      "selectDistrict": "Select District",
+      "anyPrice": "Any Price",
+      "selectPrice": "Select Price",
+      "min": "Min",
+      "max": "Max",
+      "roommates": "Roommates",
+      "numberOfRoommates": "Number of Roommates",
+      "anyRoommates": "Any Number",
+      "gender": "Gender",
+      "anyGender": "Any Gender",
+      "selectGender": "Select Gender",
+      "male": "Male",
+      "female": "Female",
+      "any": "Any",
+      "people": "people",
+      "clearAll": "Clear All",
+      "reset": "Reset",
+      "apply": "Apply",
+      "select": "Select",
+      "search": "Search"
     },
     "featuredListings": {
       "title": "Popular Options",
@@ -43,7 +68,7 @@
     },
     "problems": {
       "title": "Problems We Solve",
-      "description": "Coli is designed to solve common problems when searching for housing and roommates",
+      "description": "Shanyraq is designed to solve common problems when searching for housing and roommates",
       "highPrice": {
         "title": "High Cost of Housing",
         "description": "Collaborative living significantly reduces housing costs for each participant."
@@ -54,7 +79,7 @@
       },
       "contractSecurity": {
         "title": "Agreement Security",
-        "description": "Coli helps formalize agreements and protect the interests of all parties."
+        "description": "Shanyraq helps formalize agreements and protect the interests of all parties."
       }
     },
     "cta": {
@@ -63,7 +88,7 @@
       "button": "Post a Listing"
     },
     "advantages": {
-      "title": "Advantages of Coli",
+      "title": "Advantages of Shanyraq",
       "description": "Why you should choose our platform for finding housing and roommates",
       "quickSearch": {
         "title": "Quick Search",
@@ -82,5 +107,24 @@
         "description": "Manage listings and responses online"
       }
     }
+  },
+  "footer": {
+    "company": "Company",
+    "about": "About Us",
+    "careers": "Careers",
+    "blog": "Blog",
+    "support": "Support",
+    "help": "Help",
+    "faq": "FAQ",
+    "contact": "Contact Us",
+    "legal": "Legal",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "cookies": "Cookie Policy",
+    "description": "Housing and roommate search service - find your ideal living option.",
+    "allRightsReserved": "All rights reserved.",
+    "madeWith": "Made with",
+    "forCommunity": "for our community",
+    "scrollToTop": "Scroll to top"
   }
 }
